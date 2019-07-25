@@ -5,7 +5,6 @@ import {
   BrowserWindow,
   ipcMain,
   Menu,
-  MenuItem,
   nativeImage,
   session,
   shell,
@@ -18,6 +17,12 @@ import { notify, removeAllNotifications } from "./notifier";
 import * as storage from "./storage";
 import { isDev } from "./utils";
 
+interface MenuOption {
+  label: string;
+  accelerator?: string;
+  click(): void;
+}
+
 app.setAppUserModelId("com.Velaro.Velaro");
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -26,6 +31,7 @@ let mainWindow: BrowserWindow;
 let settingsWindow: BrowserWindow;
 let childWindows: any[] | BrowserWindow[] = [];
 let appIcon: Tray = null;
+let idle: Idle;
 
 function createWindow() {
   // The electron-spellcheck library has a sub-dependency on rxjs. Rxjs has a bunch
@@ -60,21 +66,21 @@ function createWindow() {
     }
   });
 
-  mainWindow.webContents.session.clearCache(() => {});
+  mainWindow.webContents.session.clearCache(() => {
+    console.log("cache cleared.");
+  });
 
   mainWindow.loadURL(`file://${__dirname}/views/splash.html`);
 
-  // show the splash screen, check for updates, render
-  // the app webview if no updates are available.
-  require("./updater")(mainWindow, () => {
+  setTimeout(() => {
     mainWindow.loadURL(config.consoleUrl);
+  }, 5000);
 
-    mainWindow.on("close", e => {
-      if (shouldExit === false) {
-        e.preventDefault();
-        mainWindow.hide();
-      }
-    });
+  mainWindow.on("close", e => {
+    if (shouldExit === false) {
+      e.preventDefault();
+      mainWindow.hide();
+    }
   });
 
   if (isDev()) {
@@ -83,7 +89,11 @@ function createWindow() {
 
   let shouldExit = false;
 
-  const TRAY_ICON_PATH = path.join(__dirname, "resources", "velaro.png");
+  const TRAY_ICON_PATH = path.join(
+    __dirname,
+    "resources",
+    "velaro.png"
+  );
 
   const TRAY_AVAILABLE_ICON_PATH = path.join(
     __dirname,
@@ -140,14 +150,14 @@ function createWindow() {
     }
   });
 
-  const getTrayMenu = (loggedIn: boolean) => {
+  const getTrayMenu = (loggedIn?: boolean) => {
     // default the value to true. On initial load, if the user
     // is already logged in, nothing happens. If the user is
     // not logged in, the login screen will load and trigger a
     // method to set this value to false.
     loggedIn = loggedIn === undefined ? true : loggedIn;
 
-    const options = [
+    const options: MenuOption[] = [
       {
         label: "Exit",
         accelerator: "Alt+F4",
@@ -213,11 +223,13 @@ function createWindow() {
               settingsWindow = null;
             });
 
-            settingsWindow.loadURL(`file://${__dirname}/views/settings.html`);
+            settingsWindow.loadURL(
+              `file://${__dirname}/views/settings.html`
+            );
             childWindows.push(settingsWindow);
 
             if (isDev()) {
-              settingsWindow.openDevTools();
+              settingsWindow.webContents.openDevTools();
             }
           }
         },
@@ -237,7 +249,7 @@ function createWindow() {
           label: "Developer Tools ",
           accelerator: "F12",
           click() {
-            mainWindow.toggleDevTools();
+            mainWindow.webContents.toggleDevTools();
           }
         },
         {
@@ -279,159 +291,158 @@ function createWindow() {
   });
 }
 
-const gotTheLock = app.requestSingleInstanceLock();
+let ipcInitialized = false;
 
-if (!gotTheLock) {
-  app.quit();
-  return;
-}
+function initApplication() {
+  const gotTheLock = app.requestSingleInstanceLock();
 
-app.on("second-instance", () => {
-  // User tried to run a second instance, we should focus our window.
-  if (mainWindow) {
-    if (mainWindow.isMinimized()) {
-      mainWindow.restore();
-    }
-    mainWindow.show();
-    mainWindow.focus();
-  }
-});
-
-const settings = storage.get("settings") || {};
-let idle: {
-  dispose: () => void;
-  on: {
-    (arg0: string, arg1: () => void): void;
-    (arg0: string, arg1: () => void): void;
-  };
-  seconds: any;
-};
-
-ipcMain.on("push-sender", (event: { sender: any }) => {
-  // make sure this setup only happens once, otherwise when the window is refreshed these events get hooked up again
-  // and bad things happen.
-  if (ipcMain.push_sender) {
+  if (!gotTheLock) {
+    app.quit();
     return;
   }
 
-  ipcMain.push_sender = true;
-
-  idle = new Idle(settings.idleSeconds || 300); // default idle time is 5 minutes
-  const sender = event.sender;
-
-  idle.on("idle", () => {
-    if (settings.idleTimeEnabled !== false) {
-      sender.send("idle");
-    }
-  });
-
-  idle.on("active", () => {
-    if (settings.idleTimeEnabled !== false) {
-      sender.send("active");
-    }
-  });
-
-  ipcMain.on("desktop-notify", (event: any, options: any) => {
-    notify(options);
-  });
-});
-
-ipcMain.on("get-settings", (event: { returnValue: any }) => {
-  event.returnValue = storage.get("settings");
-});
-
-ipcMain.on("get-version", (event: { returnValue: string }) => {
-  event.returnValue = app.getVersion();
-});
-
-ipcMain.on(
-  "save-settings",
-  (
-    event: { returnValue: any },
-    newSettings: { idleSeconds: any; idleTimeEnabled: any }
-  ) => {
-    storage.set("settings", newSettings);
-    idle.seconds = newSettings.idleSeconds;
-    settings.idleTimeEnabled = newSettings.idleTimeEnabled;
-    event.returnValue = newSettings;
-  }
-);
-
-ipcMain.on("open-external-link", (event: any, url: string) => {
-  shell.openExternal(url);
-});
-
-ipcMain.on(
-  "set-badge",
-  (event: any, data: { badgeData: string; text: string }) => {
-    try {
-      if (!data) {
-        mainWindow.setOverlayIcon(null, "");
-        return;
+  app.on("second-instance", () => {
+    // User tried to run a second instance, we should focus our window.
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) {
+        mainWindow.restore();
       }
-
-      const img = nativeImage.createFromDataURL(data.badgeData);
-      mainWindow.setOverlayIcon(img, data.text);
-    } catch (ex) {
-      console.error("error in set-badge", ex);
+      mainWindow.show();
+      mainWindow.focus();
     }
-  }
-);
+  });
 
-ipcMain.on("set-flash-frame", (event: any, val: boolean) => {
-  try {
-    mainWindow.flashFrame(val);
-  } catch (ex) {
-    console.error("error in set-flash-frame", ex);
-  }
-});
+  const settings = storage.get("settings") || {};
 
-ipcMain.on("acceptEngagement", (event: any, args: any) => {
-  mainWindow.focus();
-  mainWindow.webContents.send("accept", args);
-});
+  ipcMain.on("push-sender", (event: { sender: any }) => {
+    if (ipcInitialized) {
+      return;
+    }
 
-ipcMain.on("rejectEngagement", (event: any, args: any) => {
-  mainWindow.webContents.send("reject", args);
-});
+    ipcInitialized = true;
 
-ipcMain.on("ignoreEngagement", (event: any, args: any) => {
-  mainWindow.webContents.send("ignore", args);
-});
+    console.log("initializing ipc.");
 
-ipcMain.on("viewEngagement", (event: any, args: any) => {
-  mainWindow.focus();
-  mainWindow.webContents.send("view", args);
-});
+    idle = new Idle(settings.idleSeconds || 300); // default idle time is 5 minutes
+    const sender = event.sender;
 
-ipcMain.on("viewInfo", (event: any, args: any) => {
-  mainWindow.focus();
-  mainWindow.webContents.send("info", args);
-});
+    idle.on("idle", () => {
+      if (settings.idleTimeEnabled !== false) {
+        sender.send("idle");
+      }
+    });
 
-ipcMain.on("availabilityChanged", (event: any, args: any) => {
-  console.log("event:", event);
-  console.log("args:", args);
-});
+    idle.on("active", () => {
+      if (settings.idleTimeEnabled !== false) {
+        sender.send("active");
+      }
+    });
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on("ready", createWindow);
+    ipcMain.on("desktop-notify", (event: any, options: any) => {
+      console.log("desktop-notify triggered.");
+      notify(options);
+    });
+  });
 
-// Quit when all windows are closed.
-app.on("window-all-closed", () => {
-  // On OS X it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
-});
+  ipcMain.on("get-settings", (event: { returnValue: any }) => {
+    event.returnValue = storage.get("settings");
+  });
 
-app.on("activate", () => {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) {
-    createWindow();
-  }
-});
+  ipcMain.on("get-version", (event: { returnValue: string }) => {
+    event.returnValue = app.getVersion();
+  });
+
+  ipcMain.on(
+    "save-settings",
+    (
+      event: { returnValue: any },
+      newSettings: { idleSeconds: any; idleTimeEnabled: any }
+    ) => {
+      storage.set("settings", newSettings);
+      idle.seconds = newSettings.idleSeconds;
+      settings.idleTimeEnabled = newSettings.idleTimeEnabled;
+      event.returnValue = newSettings;
+    }
+  );
+
+  ipcMain.on("open-external-link", (event: any, url: string) => {
+    shell.openExternal(url);
+  });
+
+  ipcMain.on(
+    "set-badge",
+    (event: any, data: { badgeData: string; text: string }) => {
+      try {
+        if (!data) {
+          mainWindow.setOverlayIcon(null, "");
+          return;
+        }
+
+        const img = nativeImage.createFromDataURL(data.badgeData);
+        mainWindow.setOverlayIcon(img, data.text);
+      } catch (ex) {
+        console.error("error in set-badge", ex);
+      }
+    }
+  );
+
+  ipcMain.on("set-flash-frame", (event: any, val: boolean) => {
+    try {
+      mainWindow.flashFrame(val);
+    } catch (ex) {
+      console.error("error in set-flash-frame", ex);
+    }
+  });
+
+  ipcMain.on("acceptEngagement", (event: any, args: any) => {
+    mainWindow.focus();
+    mainWindow.webContents.send("accept", args);
+  });
+
+  ipcMain.on("rejectEngagement", (event: any, args: any) => {
+    mainWindow.webContents.send("reject", args);
+  });
+
+  ipcMain.on("ignoreEngagement", (event: any, args: any) => {
+    mainWindow.webContents.send("ignore", args);
+  });
+
+  ipcMain.on("viewEngagement", (event: any, args: any) => {
+    mainWindow.focus();
+    mainWindow.webContents.send("view", args);
+  });
+
+  ipcMain.on("viewInfo", (event: any, args: any) => {
+    mainWindow.focus();
+    mainWindow.webContents.send("info", args);
+  });
+
+  ipcMain.on("availabilityChanged", (event: any, args: any) => {
+    console.log("event:", event);
+    console.log("args:", args);
+  });
+
+  // This method will be called when Electron has finished
+  // initialization and is ready to create browser windows.
+  // Some APIs can only be used after this event occurs.
+  app.on("ready", createWindow);
+
+  // Quit when all windows are closed.
+  app.on("window-all-closed", () => {
+    // On OS X it is common for applications and their menu bar
+    // to stay active until the user quits explicitly with Cmd + Q
+    if (process.platform !== "darwin") {
+      app.quit();
+    }
+  });
+
+  app.on("activate", () => {
+    // On OS X it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
+    if (mainWindow === null) {
+      createWindow();
+    }
+  });
+}
+
+initApplication();

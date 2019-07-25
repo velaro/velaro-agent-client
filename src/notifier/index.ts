@@ -100,7 +100,10 @@ const show = (notification: Notification, yOffset: number) => {
     skipTaskbar: true,
     titleBarStyle: "hidden",
     show: false,
-    resizable: false
+    resizable: false,
+    webPreferences: {
+      nodeIntegration: true
+    }
   });
 
   notification.notificationWindow = notificationWindow;
@@ -114,13 +117,13 @@ const show = (notification: Notification, yOffset: number) => {
     notificationWindow.webContents.send("notification-props", { notification });
   });
 
-  // notificationWindow.webContents.openDevTools()
+  // notificationWindow.webContents.openDevTools();
 };
 
 /**
  * Display a new notification
  */
-const notify = (opts: Opts) => {
+export function notify(opts: Opts) {
   const notification = new Notification(opts);
 
   notifications.push(notification);
@@ -129,14 +132,14 @@ const notify = (opts: Opts) => {
 
   show(notification, yOffset);
   return notification;
-};
+}
 
 /**
  * Removes all notification windows
  */
-const removeAll = () => {
+export function removeAllNotifications() {
   notifications.forEach(remove);
-};
+}
 
 /**
  * Remove a single notification
@@ -167,7 +170,7 @@ setInterval(removeExpiredNotifications, 1000);
  * notification UI, typically when the user clicks a button such assets
  * Reject, Accept, Ignore, etc.
  */
-electron.ipcMain.on("removeNotification", (e: any, args: { id: any; }) => {
+electron.ipcMain.on("removeNotification", (e: any, args: { id: any }) => {
   const notificationId = args.id;
 
   const notification = notifications.find((notification: Notification) => {
@@ -181,21 +184,19 @@ electron.ipcMain.on("removeNotification", (e: any, args: { id: any; }) => {
   remove(notification);
 });
 
-electron.ipcMain.on("removeNotificationByEngagementId", (e: any, args: { engagementId: string; }) => {
-  const engagementId = args.engagementId;
+electron.ipcMain.on(
+  "removeNotificationByEngagementId",
+  (e: any, args: { engagementId: string }) => {
+    const engagementId = args.engagementId;
 
-  const notification = notifications.find((notification: Notification) => {
-    return notification.engagementId === engagementId;
-  });
+    const notification = notifications.find((notification: Notification) => {
+      return notification.engagementId === engagementId;
+    });
 
-  if (!notification) {
-    return;
+    if (!notification) {
+      return;
+    }
+
+    remove(notification);
   }
-
-  remove(notification);
-});
-
-module.exports = {
-  notify,
-  removeAllNotifications: removeAll
-};
+);

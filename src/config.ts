@@ -16,6 +16,8 @@ const production = {
 
 let config: { consoleUrl: string };
 
+console.log("process.env.VELARO_ENV:", process.env.VELARO_ENV);
+
 switch (process.env.VELARO_ENV) {
   case "development":
     config = development;

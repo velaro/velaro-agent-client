@@ -1,62 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Document</title>
-  <style>
-    body {
-      margin: 0;
-      font: normal 75% Arial, Helvetica, sans-serif;
-      background-color: #75B9E6;
-    }
-
-    .message-container {
-      position: fixed;
-      width: 100%;
-      top: 40%;
-    }
-
-    #message {
-      background: rgba(255, 255, 255, 0.6);
-      padding: 20px;
-      width: 300px;
-      margin: 0 auto;
-      border-radius: 5px;
-      text-align: center;
-      font-size: 1.1rem;
-      color: #505050;
-    }
-  </style>
-
 </head>
-
 <body>
-  <div class="message-container">
-    <div id="message">
-      Checking for update...
-    </div>
-  </div>
-  <script>
-    (function() {
-      var message = document.getElementById('message')
-
-      window.onCheckingForUpdate = function() {
-        message.innerText = 'Checking for update...'
-      }
-
-      window.onDownloadingUpdate = function() {
-        message.innerText = 'Downloading update...'
-      }
-
-      window.onUpdateNotAvailable = function() {
-        message.innerText = 'Loading app...'
-      }
-
-      window.onUpdateError = function() {
-        message.innerHTML = 'An error occurred while contacting the update server. <br><br> Loading app...'
-      }
-    }())
-  </script>
+  loading...
 </body>
 </html>

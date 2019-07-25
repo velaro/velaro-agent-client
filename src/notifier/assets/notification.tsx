@@ -1,59 +1,9 @@
 import { ipcRenderer } from "electron";
-import { Component } from "react";
+import * as React from "react";
 import { render } from "react-dom";
-
-const Icon = (props: undefined) => {
-  return createElement("div", { className: "icon" });
-};
-
-const Message = ({ message }) => {
-  return createElement("div", { className: "message" }, message);
-};
-
-const QueueTimer = createClass({
-  getInitialState() {
-    return {
-      elapsed: 0
-    };
-  },
-
-  componentDidMount() {
-    setInterval(() => {
-      this.setState({
-        elapsed: Date.now() - Date.parse(this.props.queueStart)
-      });
-    }, 1000);
-  },
-
-  getTimeStr() {
-    let seconds = this.state.elapsed / 1000;
-
-    var isNegative = seconds < 0;
-    if (isNegative) seconds = seconds * -1;
-
-    var padNumber = function(num: string | number) {
-      if (num < 10) return "0" + num;
-      return num;
-    };
-
-    var h = padNumber(Math.floor(seconds / 3600));
-    var m = padNumber(Math.floor((seconds % 3600) / 60));
-    var s = padNumber(Math.floor((seconds % 3600) % 60));
-
-    var str = h + ":" + m + ":" + s;
-    if (isNegative) str = "- " + str;
-
-    return str;
-  },
-
-  render() {
-    return createElement(
-      "div",
-      { className: "queue-timer" },
-      this.getTimeStr()
-    );
-  }
-});
+import Icon from "./Notification/Icon";
+import Message from "./Notification/Message";
+import QueueTimer from "./Notification/QueueTimer";
 
 const createButton = (
   label: string,
@@ -69,98 +19,114 @@ const createButton = (
     }
   };
 
-  return createElement("button", { className: "button", onClick }, label);
+  return (
+    <button className="button" onClick={onClick}>
+      {label}
+    </button>
+  );
 };
 
-const AcceptButton = (props: { id: any; engagementId: any; }) => {
+interface ButtonProps {
+  id?: any;
+  engagementId?: any;
+  queueIncomingRequests: any;
+  isNewLineNotification: any;
+  rejectEnabled?: any;
+}
+
+const AcceptButton = (props: ButtonProps) => {
   return createButton("Accept", "acceptEngagement", props);
 };
 
-const RejectButton = (props: { id: any; engagementId: any; }) => {
+const RejectButton = (props: ButtonProps) => {
   return createButton("Reject", "rejectEngagement", props);
 };
 
-const IgnoreButton = (props: { id: any; engagementId: any; }) => {
+const IgnoreButton = (props: ButtonProps) => {
   return createButton("Ignore", "ignoreEngagement", props);
 };
 
-const DismissButton = (props: { id: any; engagementId: any; }) => {
+const DismissButton = (props: ButtonProps) => {
   return createButton("Dismiss", "dismissNotification", props);
 };
 
-const ViewButton = (props: { id: any; engagementId: any; }) => {
+const ViewButton = (props: ButtonProps) => {
   return createButton("View", "viewEngagement", props);
 };
 
-const InfoButton = (props: { id: any; engagementId: any; }) => {
+const InfoButton = (props: ButtonProps) => {
   const removesNotification = false;
   return createButton("Info", "viewInfo", props, removesNotification);
 };
 
-const Buttons = (props: { id?: any; engagementId?: any; queueIncomingRequests: any; isNewLineNotification: any; rejectEnabled?: any; }) => {
+const Buttons = (props: ButtonProps) => {
   const { queueIncomingRequests, isNewLineNotification, rejectEnabled } = props;
 
   if (isNewLineNotification) {
-    return createElement(
-      "div",
-      { className: "buttons" },
-
-      DismissButton(props)
-    );
+    return <div className="buttons">{DismissButton(props)}</div>;
   }
 
-  return createElement(
-    "div",
-    { className: "buttons" },
-    // hide the accept button for auto-routed chats
-    queueIncomingRequests && AcceptButton(props),
+  return (
+    <div className="buttons">
+      {// hide the accept button for auto-routed chats
+      queueIncomingRequests && AcceptButton(props)}
 
-    // hide the reject button for auto-routed chats
-    rejectEnabled && queueIncomingRequests && RejectButton(props),
+      {// hide the reject button for auto-routed chats
+      rejectEnabled && queueIncomingRequests && RejectButton(props)}
 
-    // always display the ignore button
-    IgnoreButton(props),
+      {// always display the ignore button
+      IgnoreButton(props)}
 
-    // hide the view button for queued chats
-    !queueIncomingRequests && ViewButton(props),
+      {// hide the view button for queued chats
+      !queueIncomingRequests && ViewButton(props)}
 
-    // always display the info button
-    InfoButton(props)
+      {// always display the info button
+      InfoButton(props)}
+    </div>
   );
 };
 
-const Notification = createClass({
-  render() {
-    const {
-      id,
-      message,
-      engagementId,
-      queueStart,
-      queueIncomingRequests,
-      isNewLineNotification
-    } = this.props.notification;
+interface NotificationProps {
+  notification: {
+    id: any;
+    message: string;
+    engagementId: string;
+    queueStart: any;
+    queueIncomingRequests: any;
+    isNewLineNotification: boolean;
+  };
+}
 
-    return createElement(
-      "div",
-      { className: "notification" },
-      createElement("div", { className: "left-col" }, Icon()),
-      createElement(
-        "div",
-        { className: "right-col" },
-        Message({ message }),
-        queueIncomingRequests && createElement(QueueTimer, { queueStart }),
-        Buttons({
-          id,
-          engagementId,
-          queueIncomingRequests,
-          isNewLineNotification
-        })
-      )
-    );
-  }
-});
+function Notification(props: NotificationProps) {
+  const {
+    id,
+    message,
+    engagementId,
+    queueStart,
+    queueIncomingRequests,
+    isNewLineNotification
+  } = props.notification;
+
+  return (
+    <div className="notification">
+      <div className="left-col">
+        <Icon />
+      </div>
+      <div className="right-col">
+        <Message message={message} />
+        {queueIncomingRequests && <QueueTimer queueStart={queueStart} />}
+        <Buttons
+          id={id}
+          engagementId={engagementId}
+          queueIncomingRequests={queueIncomingRequests}
+          isNewLineNotification={isNewLineNotification}
+        />
+      </div>
+    </div>
+  );
+}
 
 ipcRenderer.on("notification-props", (event: any, props: any) => {
-  const rootElement = createElement(Notification, props);
+  const rootElement = <Notification {...props} />;
   render(rootElement, document.getElementById("app"));
 });
