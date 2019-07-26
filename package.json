@@ -2,7 +2,7 @@
   "name": "try-pipelines",
   "version": "1.0.1",
   "description": "A minimal Electron application",
-  "main": "main.ts",
+  "main": "./compiled/main.js",
   "scripts": {
     "start": "yarn build && electron ./compiled/main.js",
     "copy": "node scripts/copyStatic.js",
