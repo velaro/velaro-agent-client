@@ -1,10 +1,14 @@
 {
-  "name": "try-pipelines",
+  "name": "velaro",
   "version": "1.0.1",
-  "description": "A minimal Electron application",
+  "description": "Velaro chat client",
   "main": "./compiled/main.js",
+  "repository": "https://github.com/rwhitmire/try-pipelines",
+  "author": "Velaro",
+  "license": "MIT",
+  "private": true,
   "scripts": {
-    "start": "yarn build && electron ./compiled/main.js",
+    "start": "yarn build && cross-env VELARO_ENV=development electron ./compiled/main.js",
     "copy": "node scripts/copyStatic.js",
     "build": "yarn copy && tsc",
     "watch": "yarn copy && tsc -w",
@@ -15,13 +19,12 @@
     "dist:win": "electron-builder --win --x64 --ia32",
     "dist:mac": "electron-builder --mac"
   },
-  "repository": "https://github.com/rwhitmire/try-pipelines",
-  "author": "Ryan Whitmire",
   "devDependencies": {
     "@types/electron-spellchecker": "^1.1.2",
     "@types/react": "^16.8.23",
     "@types/react-dom": "^16.8.5",
     "copy": "^0.3.2",
+    "cross-env": "^5.2.0",
     "electron": "^5.0.7",
     "electron-builder": "^21.1.1",
     "electron-notarize": "^0.1.1",
@@ -29,9 +32,10 @@
     "typescript": "^3.5.3"
   },
   "build": {
-    "appId": "com.velaro.chat",
+    "appId": "com.Velaro.Velaro",
+    "productName": "Velaro",
     "mac": {
-      "category": "your.app.category.type",
+      "category": "public.app-category.business",
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "entitlements": "build/entitlements.mac.plist",
