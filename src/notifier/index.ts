@@ -106,6 +106,10 @@ const show = (notification: Notification, yOffset: number) => {
     }
   });
 
+  if (process.platform === "darwin") {
+    notificationWindow.setWindowButtonVisibility(false);
+  }
+
   notification.notificationWindow = notificationWindow;
 
   notificationWindow.loadURL(
