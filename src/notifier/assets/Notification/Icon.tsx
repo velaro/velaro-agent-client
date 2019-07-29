@@ -1,5 +1,5 @@
 import * as React from "react";
 
 export default function Icon() {
-  return <div className="icon" />;
+  return <img src="logo.svg" className="icon" />;
 }

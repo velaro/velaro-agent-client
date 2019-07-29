@@ -1,6 +1,6 @@
 html,
 body {
-  background-color: #f6f6f6;
+  background-color: #fff;
   padding: 0;
   margin: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -12,15 +12,6 @@ body {
 }
 
 .notification {
-  display: table;
-}
-
-.left-col,
-.right-col {
-  height: 120px;
-  display: table-cell;
-  vertical-align: top;
-  position: relative;
 }
 
 .right-col {
@@ -29,14 +20,6 @@ body {
 }
 
 .icon {
-  padding: 10px;
-  height: 120px;
-  width: 120px;
-  background-image: url('./logo.png');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: 50%;
-  background-origin: content-box;
 }
 
 .message {
@@ -50,22 +33,13 @@ body {
 }
 
 .buttons {
-  position: absolute;
-  bottom: 5px;
-  left: 5px;
-  right: 5px;
-  display: flex;
 }
 
 .button {
-  color: #fff;
-  background: #2860a9;
-  padding: 6px 12px;
+  background: #fff;
   border: none;
-  margin-right: 10px;
+  border-top: 1px solid red;
   cursor: pointer;
-  flex-grow: 1;
-  flex-shrink: 0;
 }
 
 .button:hover {

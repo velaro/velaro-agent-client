@@ -167,7 +167,7 @@ const removeExpiredNotifications = () => {
   });
 };
 
-setInterval(removeExpiredNotifications, 1000);
+// setInterval(removeExpiredNotifications, 1000);
 
 /**
  * Listen for the remove notification event. This is called from the

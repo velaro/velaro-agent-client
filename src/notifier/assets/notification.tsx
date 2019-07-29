@@ -109,19 +109,15 @@ function Notification(props: NotificationProps) {
 
   return (
     <div className="notification">
-      <div className="left-col">
-        <Icon />
-      </div>
-      <div className="right-col">
-        <Message message={message} />
-        {queueIncomingRequests && <QueueTimer queueStart={queueStart} />}
-        <Buttons
-          id={id}
-          engagementId={engagementId}
-          queueIncomingRequests={queueIncomingRequests}
-          isNewLineNotification={isNewLineNotification}
-        />
-      </div>
+      <Icon />
+      <Message message={message} />
+      {queueIncomingRequests && <QueueTimer queueStart={queueStart} />}
+      <Buttons
+        id={id}
+        engagementId={engagementId}
+        queueIncomingRequests={queueIncomingRequests}
+        isNewLineNotification={isNewLineNotification}
+      />
     </div>
   );
 }
