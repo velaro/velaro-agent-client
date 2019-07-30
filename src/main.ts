@@ -206,9 +206,8 @@ function createWindow() {
               settingsWindow = null;
             });
 
-            settingsWindow.loadURL(
-              `file://${__dirname}/views/settings.html`
-            );
+            settingsWindow.loadURL(`file://${__dirname}/views/settings.html`);
+
             childWindows.push(settingsWindow);
 
             if (isDev()) {
@@ -246,7 +245,10 @@ function createWindow() {
     }
   ]);
 
-  Menu.setApplicationMenu(menu);
+  // disable the default menu
+  Menu.setApplicationMenu(null);
+
+  mainWindow.setMenu(menu);
 
   // Emitted when the window is closed.
   mainWindow.on("closed", () => {
