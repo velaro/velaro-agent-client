@@ -12,7 +12,7 @@ export function getTrayAvailableIconPath() {
   if (process.platform === "darwin") {
     return path.join(__dirname, "resources", "mac", "VelaroTemplate.png");
   } else {
-    return path.join(__dirname, "resources", "windows", "Velaro.png");
+    return path.join(__dirname, "resources", "windows", "VelaroAvailable.png");
   }
 }
 
@@ -20,6 +20,6 @@ export function getTrayUnavailableIconPath() {
   if (process.platform === "darwin") {
     return path.join(__dirname, "resources", "mac", "VelaroTemplate.png");
   } else {
-    return path.join(__dirname, "resources", "windows", "Velaro.png");
+    return path.join(__dirname, "resources", "windows", "VelaroUnavailable.png");
   }
 }
