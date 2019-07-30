@@ -2,7 +2,6 @@ import { ipcRenderer } from "electron";
 import * as React from "react";
 import { render } from "react-dom";
 import Icon from "./Notification/Icon";
-import Message from "./Notification/Message";
 import QueueTimer from "./Notification/QueueTimer";
 
 const createButton = (
@@ -31,7 +30,6 @@ interface ButtonProps {
   engagementId?: any;
   queueIncomingRequests: any;
   isNewLineNotification: any;
-  rejectEnabled?: any;
 }
 
 const AcceptButton = (props: ButtonProps) => {
@@ -60,24 +58,25 @@ const InfoButton = (props: ButtonProps) => {
 };
 
 const Buttons = (props: ButtonProps) => {
-  const { queueIncomingRequests, isNewLineNotification, rejectEnabled } = props;
+  const { queueIncomingRequests, isNewLineNotification } = props;
 
+  // newline notification just has dismiss button
   if (isNewLineNotification) {
     return <div className="buttons">{DismissButton(props)}</div>;
   }
 
   return (
     <div className="buttons">
-      {// hide the accept button for auto-routed chats
+      {// show the accept button for queued chats
       queueIncomingRequests && AcceptButton(props)}
 
-      {// hide the reject button for auto-routed chats
-      rejectEnabled && queueIncomingRequests && RejectButton(props)}
+      {// show the reject button for queued chats
+      queueIncomingRequests && RejectButton(props)}
 
       {// always display the ignore button
       IgnoreButton(props)}
 
-      {// hide the view button for queued chats
+      {// show the view button for auto-routed chats
       !queueIncomingRequests && ViewButton(props)}
 
       {// always display the info button
@@ -107,11 +106,26 @@ function Notification(props: NotificationProps) {
     isNewLineNotification
   } = props.notification;
 
+  React.useEffect(() => {
+    ipcRenderer.send("renderComplete", {
+      notificationId: id,
+      scrollHeight: document.body.scrollHeight
+    });
+  }, []);
+
   return (
     <div className="notification">
-      <Icon />
-      <Message message={message} />
-      {queueIncomingRequests && <QueueTimer queueStart={queueStart} />}
+      <div className="row">
+        <div className="col">
+          <Icon />
+        </div>
+        <div className="col" style={{ width: "100%" }}>
+          <div className="message">
+            {message}&nbsp;
+            {queueIncomingRequests && <QueueTimer queueStart={queueStart} />}
+          </div>
+        </div>
+      </div>
       <Buttons
         id={id}
         engagementId={engagementId}

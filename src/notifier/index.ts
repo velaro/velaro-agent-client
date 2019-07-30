@@ -1,8 +1,7 @@
 import * as electron from "electron";
 
 const notifications: any[] | Notification[] = [];
-const NOTIFICATION_HEIGHT = 120;
-const NOTIFICATION_WIDTH = 440;
+const NOTIFICATION_WIDTH = 280;
 const NOTIFICATION_MARGIN = 10;
 
 let workAreaSize: electron.Size;
@@ -19,7 +18,6 @@ interface Opts {
   isNewLineNotification: any;
   autoHide: boolean;
   autoHideDelay: number;
-  buttons: any[];
 }
 
 class Notification {
@@ -32,8 +30,8 @@ class Notification {
   public queueIncomingRequests: any;
   public isNewLineNotification: any;
   public autoHideDelay: number;
-  public buttons: any[];
-  public notificationWindow: any;
+  public notificationWindow: electron.BrowserWindow;
+  public height: number = 0;
 
   constructor(opts: Opts) {
     this.id = Date.now();
@@ -50,7 +48,6 @@ class Notification {
     }
 
     this.autoHideDelay = opts.autoHideDelay || 10000;
-    this.buttons = opts.buttons || [];
   }
 
   public isExpired() {
@@ -65,35 +62,38 @@ class Notification {
 /**
  * reposition all notifications
  */
-const repositionAll = () => {
+function repositionAll() {
   notifications.forEach(setPosition);
-};
+}
 
 /**
- * Sets the position of a single notification depending on it's
+ * Sets the position of a single notification depending on its
  * order in the notifications array. Notifications are stacked
  * bottom to top.
  */
 const setPosition = (notification: Notification) => {
   const index = notifications.indexOf(notification);
-  const yOffset = (NOTIFICATION_HEIGHT + NOTIFICATION_MARGIN) * (index + 1);
-
+  const yOffset = (notification.height + NOTIFICATION_MARGIN) * (index + 1);
   const x = notification.notificationWindow.getPosition()[0];
   const y = workAreaSize.height - yOffset;
-
   notification.notificationWindow.setPosition(x, y);
 };
 
-const show = (notification: Notification, yOffset: number) => {
+const show = (notification: Notification) => {
   const notificationWindow = new electron.BrowserWindow({
     width: NOTIFICATION_WIDTH,
-    height: NOTIFICATION_HEIGHT,
+    height: notification.height,
     x: workAreaSize.width - NOTIFICATION_WIDTH - NOTIFICATION_MARGIN,
-    y: workAreaSize.height - yOffset,
-    frame: false,
+
+    // Initially position the notification off the screen. Once we know
+    // the height of the notification, we'll set its position.
+    y: -10000,
+
     // setting transparent to true seems to cause issues in windows 7
     // https://github.com/electron/electron/issues/2170
     transparent: false,
+
+    frame: false,
     minimizable: false,
     maximizable: false,
     alwaysOnTop: true,
@@ -129,12 +129,8 @@ const show = (notification: Notification, yOffset: number) => {
  */
 export function notify(opts: Opts) {
   const notification = new Notification(opts);
-
   notifications.push(notification);
-  const yOffset =
-    (NOTIFICATION_HEIGHT + NOTIFICATION_MARGIN) * notifications.length;
-
-  show(notification, yOffset);
+  show(notification);
   return notification;
 }
 
@@ -145,6 +141,12 @@ export function removeAllNotifications() {
   notifications.forEach(remove);
 }
 
+function getNotification(id: number): Notification {
+  return notifications.find((notification: Notification) => {
+    return notification.id === id;
+  });
+}
+
 /**
  * Remove a single notification
  */
@@ -153,6 +155,7 @@ const remove = (notification: Notification) => {
   notification.notificationWindow = null;
   const index = notifications.indexOf(notification);
   notifications.splice(index, 1);
+  repositionAll();
 };
 
 /**
@@ -167,7 +170,7 @@ const removeExpiredNotifications = () => {
   });
 };
 
-// setInterval(removeExpiredNotifications, 1000);
+setInterval(removeExpiredNotifications, 1000);
 
 /**
  * Listen for the remove notification event. This is called from the
@@ -175,11 +178,7 @@ const removeExpiredNotifications = () => {
  * Reject, Accept, Ignore, etc.
  */
 electron.ipcMain.on("removeNotification", (e: any, args: { id: any }) => {
-  const notificationId = args.id;
-
-  const notification = notifications.find((notification: Notification) => {
-    return notification.id === notificationId;
-  });
+  const notification = getNotification(args.id);
 
   if (!notification) {
     return;
@@ -202,5 +201,31 @@ electron.ipcMain.on(
     }
 
     remove(notification);
+  }
+);
+
+
+/**
+ * When rendering is complete, we'll receive the height of the notification.
+ * We'll use this to set the height of the BrowserWindow and then reposition
+ * all notifications.
+ */
+electron.ipcMain.on(
+  "renderComplete",
+  (event: any, props: { notificationId: number; scrollHeight: number }) => {
+    const notification = getNotification(props.notificationId);
+
+    if (!notification) {
+      return;
+    }
+
+    notification.height = props.scrollHeight;
+
+    notification.notificationWindow.setSize(
+      NOTIFICATION_WIDTH,
+      props.scrollHeight
+    );
+
+    repositionAll();
   }
 );

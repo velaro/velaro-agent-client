@@ -22,7 +22,7 @@ export default class QueueTimer extends React.Component<Props, State> {
   }
 
   public render() {
-    return <div className="queue-timer">{this.getTimeStr()}</div>;
+    return <span className="queue-timer">{this.getTimeStr()}</span>;
   }
 
   private getTimeStr() {

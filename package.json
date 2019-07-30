@@ -9,7 +9,7 @@
   "private": true,
   "scripts": {
     "start": "yarn build && cross-env VELARO_ENV=development electron ./compiled/main.js",
-    "copy": "node scripts/copyStatic.js",
+    "copy": "node scripts/copy.js",
     "build": "yarn copy && tsc",
     "watch": "yarn copy && tsc -w",
     "rebuild": "electron-builder install-app-deps",

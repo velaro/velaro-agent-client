@@ -395,6 +395,7 @@ function initApplication() {
   });
 
   ipcMain.on("acceptEngagement", (event: any, args: any) => {
+    mainWindow.show();
     mainWindow.focus();
     mainWindow.webContents.send("accept", args);
   });
@@ -408,11 +409,13 @@ function initApplication() {
   });
 
   ipcMain.on("viewEngagement", (event: any, args: any) => {
+    mainWindow.show();
     mainWindow.focus();
     mainWindow.webContents.send("view", args);
   });
 
   ipcMain.on("viewInfo", (event: any, args: any) => {
+    mainWindow.show();
     mainWindow.focus();
     mainWindow.webContents.send("info", args);
   });
