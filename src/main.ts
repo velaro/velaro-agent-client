@@ -14,6 +14,7 @@ import {
 import config from "./config";
 import Idle from "./idle";
 import { notify, removeAllNotifications } from "./notifier";
+import * as resources from "./resources";
 import * as storage from "./storage";
 import { isDev } from "./utils";
 
@@ -89,25 +90,7 @@ function createWindow() {
 
   let shouldExit = false;
 
-  const TRAY_ICON_PATH = path.join(
-    __dirname,
-    "resources",
-    "velaro.png"
-  );
-
-  const TRAY_AVAILABLE_ICON_PATH = path.join(
-    __dirname,
-    "resources",
-    "velaro-available.png"
-  );
-
-  const TRAY_UNAVAILABLE_ICON_PATH = path.join(
-    __dirname,
-    "resources",
-    "velaro-unavailable.png"
-  );
-
-  appIcon = new Tray(TRAY_ICON_PATH);
+  appIcon = new Tray(resources.getTrayIconPath());
 
   /**
    * The default window close functionality is set to minimize
@@ -121,7 +104,7 @@ function createWindow() {
   const logout = () => {
     mainWindow.loadURL(`${config.consoleUrl}/account/logout`);
     appIcon.setContextMenu(getTrayMenu(false));
-    appIcon.setImage(TRAY_ICON_PATH);
+    appIcon.setImage(resources.getTrayIconPath());
     removeAllNotifications();
   };
 
@@ -138,15 +121,15 @@ function createWindow() {
     appIcon.setContextMenu(getTrayMenu(isLoggedIn));
 
     if (!isLoggedIn) {
-      appIcon.setImage(TRAY_ICON_PATH);
+      appIcon.setImage(resources.getTrayIconPath());
     }
   });
 
   ipcMain.on("update-tray-availability", (event: any, available: boolean) => {
     if (available) {
-      appIcon.setImage(TRAY_AVAILABLE_ICON_PATH);
+      appIcon.setImage(resources.getTrayAvailableIconPath());
     } else {
-      appIcon.setImage(TRAY_UNAVAILABLE_ICON_PATH);
+      appIcon.setImage(resources.getTrayUnavailableIconPath());
     }
   });
 
