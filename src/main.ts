@@ -199,7 +199,10 @@ function createWindow() {
             settingsWindow = new BrowserWindow({
               title: "Settings",
               height: 300,
-              width: 400
+              width: 400,
+              webPreferences: {
+                nodeIntegration: true
+              }
             });
 
             settingsWindow.on("closed", () => {
