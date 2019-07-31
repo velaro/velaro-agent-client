@@ -1,6 +1,6 @@
 {
   "name": "velaro",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Velaro chat client",
   "main": "./compiled/main.js",
   "repository": "https://github.com/rwhitmire/try-pipelines",
