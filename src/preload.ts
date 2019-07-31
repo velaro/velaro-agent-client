@@ -25,7 +25,6 @@ ipcRenderer.send("push-sender");
   },
 
   notify(options: any) {
-    console.log("notify called", options);
     ipcRenderer.send("desktop-notify", options);
   },
 

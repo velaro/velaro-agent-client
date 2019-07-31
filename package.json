@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@types/electron-spellchecker": "^1.1.2",
+    "@types/jquery": "^3.3.30",
     "@types/react": "^16.8.23",
     "@types/react-dom": "^16.8.5",
     "copy": "^0.3.2",
@@ -59,7 +60,9 @@
   },
   "dependencies": {
     "@paulcbetts/system-idle-time": "^1.0.5",
+    "electron-log": "^3.0.6",
     "electron-spellchecker": "^2.2.0",
+    "electron-updater": "^4.1.2",
     "jquery": "^3.4.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"

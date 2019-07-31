@@ -11,11 +11,13 @@ import {
   Tray
 } from "electron";
 
+import * as log from "electron-log";
 import config from "./config";
 import Idle from "./idle";
 import { notify, removeAllNotifications } from "./notifier";
 import * as resources from "./resources";
 import * as storage from "./storage";
+import { initUpdater } from "./update";
 import { isDev } from "./utils";
 
 interface MenuOption {
@@ -50,7 +52,6 @@ function createWindow() {
 
   session.defaultSession.webRequest.onBeforeRequest((details, callback) => {
     if (details.url.indexOf(".js.map") > -1) {
-      console.log("intercepted request for map file:", details.url);
       callback({ cancel: true });
     } else {
       callback({});
@@ -68,7 +69,7 @@ function createWindow() {
   });
 
   mainWindow.webContents.session.clearCache(() => {
-    console.log("cache cleared.");
+    log.info("cache cleared.");
   });
 
   mainWindow.loadURL(`file://${__dirname}/views/splash.html`);
@@ -266,7 +267,7 @@ function createWindow() {
       try {
         win.close();
       } catch (err) {
-        console.error(err);
+        log.error(err);
       }
     });
 
@@ -309,8 +310,6 @@ function initApplication() {
 
     ipcInitialized = true;
 
-    console.log("initializing ipc.");
-
     idle = new Idle(settings.idleSeconds || 300); // default idle time is 5 minutes
     const sender = event.sender;
 
@@ -327,7 +326,6 @@ function initApplication() {
     });
 
     ipcMain.on("desktop-notify", (event: any, options: any) => {
-      console.log("desktop-notify triggered.");
       notify(options);
     });
   });
@@ -368,8 +366,8 @@ function initApplication() {
 
         const img = nativeImage.createFromDataURL(data.badgeData);
         mainWindow.setOverlayIcon(img, data.text);
-      } catch (ex) {
-        console.error("error in set-badge", ex);
+      } catch (err) {
+        log.error(err);
       }
     }
   );
@@ -377,8 +375,8 @@ function initApplication() {
   ipcMain.on("set-flash-frame", (event: any, val: boolean) => {
     try {
       mainWindow.flashFrame(val);
-    } catch (ex) {
-      console.error("error in set-flash-frame", ex);
+    } catch (err) {
+      log.error(err);
     }
   });
 
@@ -409,8 +407,8 @@ function initApplication() {
   });
 
   ipcMain.on("availabilityChanged", (event: any, args: any) => {
-    console.log("event:", event);
-    console.log("args:", args);
+    log.debug("event:", event);
+    log.debug("args:", args);
   });
 
   // This method will be called when Electron has finished
@@ -437,3 +435,4 @@ function initApplication() {
 }
 
 initApplication();
+initUpdater();

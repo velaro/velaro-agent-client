@@ -29,3 +29,8 @@ All commits on the master branch will execute an Azure Pipelines build and artif
 will be uploaded to GitHub. When the release is final, publish the release on GitHub. All
 NSIS and DMG clients will auto-update from this release. Future commits on this version will
 not upload new artifacts.
+
+### Logs
+
+ * **Mac:** `~/Library/Logs/Velaro/log.log`
+ * **Windows:** `%USERPROFILE%\AppData\Roaming\Velaro\log.log`

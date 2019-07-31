@@ -1,4 +1,5 @@
 import * as electron from "electron";
+import * as log from "electron-log";
 
 const notifications: any[] | Notification[] = [];
 const NOTIFICATION_WIDTH = 280;
@@ -128,6 +129,7 @@ const show = (notification: Notification) => {
  * Display a new notification
  */
 export function notify(opts: Opts) {
+  log.info("show notification", opts);
   const notification = new Notification(opts);
   notifications.push(notification);
   show(notification);
@@ -165,6 +167,7 @@ const removeExpiredNotifications = () => {
   notifications.forEach((notification: Notification) => {
     if (notification.isExpired()) {
       remove(notification);
+      log.info("notification expired", notification);
       repositionAll();
     }
   });
@@ -203,7 +206,6 @@ electron.ipcMain.on(
     remove(notification);
   }
 );
-
 
 /**
  * When rendering is complete, we'll receive the height of the notification.
