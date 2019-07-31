@@ -1,6 +1,7 @@
 import * as log from "electron-log";
 import { autoUpdater } from "electron-updater";
 
+let updateDownloaded = false;
 let initialized = false;
 
 export function initUpdater() {
@@ -11,7 +12,14 @@ export function initUpdater() {
   initialized = true;
   log.transports.file.level = "debug";
   autoUpdater.logger = log;
+  autoUpdater.autoInstallOnAppQuit = false;
   autoUpdater.checkForUpdatesAndNotify();
+}
+
+export function quitAndUpdate() {
+  if (updateDownloaded) {
+    autoUpdater.quitAndInstall();
+  }
 }
 
 // autoUpdater.on("error", () => {
@@ -26,5 +34,6 @@ export function initUpdater() {
 // autoUpdater.on("download-progress", args => {
 // });
 
-// autoUpdater.on("update-downloaded", args => {
-// });
+autoUpdater.on("update-downloaded", () => {
+  updateDownloaded = true;
+});

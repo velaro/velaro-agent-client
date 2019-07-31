@@ -17,7 +17,7 @@ import Idle from "./idle";
 import { notify, removeAllNotifications } from "./notifier";
 import * as resources from "./resources";
 import * as storage from "./storage";
-import { initUpdater } from "./update";
+import { initUpdater, quitAndUpdate } from "./update";
 import { isDev } from "./utils";
 
 interface MenuOption {
@@ -99,6 +99,7 @@ function createWindow() {
    */
   const exit = () => {
     shouldExit = true;
+    quitAndUpdate();
     app.quit();
   };
 
