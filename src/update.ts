@@ -11,8 +11,6 @@ export function initUpdater() {
   initialized = true;
   log.transports.file.level = "debug";
   autoUpdater.logger = log;
-
-  // just check once at startup for now.
   autoUpdater.checkForUpdatesAndNotify();
 }
 
