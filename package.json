@@ -14,10 +14,10 @@
     "watch": "yarn copy && tsc -w",
     "rebuild": "electron-builder install-app-deps",
     "postinstall": "yarn rebuild",
-    "pack": "electron-builder --dir",
-    "dist": "electron-builder",
-    "dist:win": "electron-builder --win --x64 --ia32",
-    "dist:mac": "electron-builder --mac"
+    "dist:win:nsis": "scripts/deploy/win-nsis.bat",
+    "dist:win:zip": "scripts/deploy/win-zip.bat",
+    "dist:mac:dmg": "scripts/deploy/mac-dmg.sh",
+    "dist:mac:zip": "scripts/deploy/mac-zip.sh"
   },
   "devDependencies": {
     "@types/electron-spellchecker": "^1.1.2",
@@ -36,15 +36,11 @@
     "appId": "com.Velaro.Velaro",
     "productName": "Velaro",
     "mac": {
-      "target": "dmg",
       "category": "public.app-category.business",
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
       "entitlements": "build/entitlements.mac.plist",
       "entitlementsInherit": "build/entitlements.mac.plist"
-    },
-    "win": {
-      "target": "nsis"
     },
     "nsis": {
       "oneClick": false,

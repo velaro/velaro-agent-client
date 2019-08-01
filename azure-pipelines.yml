@@ -8,11 +8,13 @@ jobs:
         versionSpec: 12.7.0
       displayName: Install Node.js
     - script: yarn
-      displayName: Yarn Install
+      displayName: Install Packages
     - script: yarn build
-      displayName: Yarn Build
-    - script: yarn dist:win
-      displayName: Yarn Dist
+      displayName: Build
+    - script: yarn dist:win:nsis
+      displayName: Deploy NSIS
+    - script: yarn dist:win:zip
+      displayName: Deploy ZIP
 
 - job: macOS
   pool:
@@ -23,8 +25,10 @@ jobs:
         versionSpec: 12.7.0
       displayName: Install Node.js
     - script: yarn
-      displayName: Yarn Install
+      displayName: Install Packagesl
     - script: yarn build
-      displayName: Yarn Build
-    - script: yarn dist:mac
-      displayName: Yarn Dist
+      displayName: Build
+    - script: yarn dist:mac:dmg
+      displayName: Deploy DMG
+    - script: yarn dist:mac:zip
+      displayName: Deploy ZIP
