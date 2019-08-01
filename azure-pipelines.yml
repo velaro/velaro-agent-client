@@ -9,8 +9,6 @@ jobs:
       displayName: Install Node.js
     - script: yarn
       displayName: Install Packages
-    - script: yarn build
-      displayName: Build
     - script: yarn dist:win:nsis
       displayName: Deploy NSIS
     - script: yarn dist:win:zip
@@ -26,8 +24,6 @@ jobs:
       displayName: Install Node.js
     - script: yarn
       displayName: Install Packagesl
-    - script: yarn build
-      displayName: Build
     - script: yarn dist:mac:dmg
       displayName: Deploy DMG
     - script: yarn dist:mac:zip

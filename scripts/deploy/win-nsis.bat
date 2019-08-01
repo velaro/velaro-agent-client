@@ -1,10 +1,10 @@
 @echo off
-setlocal
 
 :: Enable auto updates
 copy src\updateConfig.enabled.json src\updateConfig.json
 
-electron-builder --win nsis --x64 --ia32
+:: Build and copy
+call yarn build
 
-endlocal
-exit /b %errorlevel%
+:: Publish artifacts
+call electron-builder --win nsis --x64 --ia32
