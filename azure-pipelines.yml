@@ -23,7 +23,7 @@ jobs:
         versionSpec: 12.7.0
       displayName: Install Node.js
     - script: yarn
-      displayName: Install Packagesl
+      displayName: Install Packages
     - script: yarn dist:mac:dmg
       displayName: Deploy DMG
     - script: yarn dist:mac:zip
