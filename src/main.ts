@@ -230,23 +230,13 @@ function createWindow() {
       ]
     },
     {
-      label: "Window",
-      submenu: [
-        {
-          label: "Developer Tools ",
-          accelerator: "F12",
-          click() {
-            mainWindow.webContents.toggleDevTools();
-          }
-        },
-        {
-          label: "Refresh",
-          accelerator: "F5",
-          click() {
-            mainWindow.reload();
-          }
-        }
-      ]
+      role: "editMenu"
+    },
+    {
+      role: "viewMenu"
+    },
+    {
+      role: "windowMenu"
     }
   ]);
 
