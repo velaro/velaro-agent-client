@@ -1,3 +1,6 @@
+
+[![Build Status](https://dev.azure.com/ryanw51/try-pipelines/_apis/build/status/rwhitmire.try-pipelines?branchName=master)](https://dev.azure.com/ryanw51/try-pipelines/_build/latest?definitionId=1&branchName=master)
+
 ### Development
 Install the following:
 - node
