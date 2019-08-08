@@ -26,6 +26,7 @@ interface MenuOption {
   click(): void;
 }
 
+app.commandLine.appendSwitch("--autoplay-policy", "no-user-gesture-required");
 app.setAppUserModelId("com.Velaro.Velaro");
 
 // Keep a global reference of the window object, if you don't, the window will
