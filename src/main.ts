@@ -76,7 +76,9 @@ function createWindow() {
   mainWindow.loadURL(`file://${__dirname}/views/splash.html`);
 
   setTimeout(() => {
-    mainWindow.loadURL(config.consoleUrl);
+    mainWindow.loadURL(config.consoleUrl).catch(() => {
+      mainWindow.loadURL(`file://${__dirname}/views/offline.html`);
+    });
   }, 5000);
 
   mainWindow.on("close", e => {
