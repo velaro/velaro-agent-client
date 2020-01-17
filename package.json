@@ -28,13 +28,13 @@
     "cross-env": "^5.2.0",
     "electron": "^5.0.7",
     "electron-builder": "^21.1.1",
-    "electron-notarize": "^0.1.1",
+    "electron-notarize": "^0.2.1",
     "tslint": "^5.18.0",
     "typescript": "^3.5.3"
   },
   "build": {
-    "appId": "com.Velaro.Velaro",
-    "productName": "Velaro",
+    "appId": "com.velaro.chat",
+    "productName": "Velaro Live Chat",
     "mac": {
       "category": "public.app-category.business",
       "hardenedRuntime": true,
