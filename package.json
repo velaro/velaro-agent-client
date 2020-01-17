@@ -34,7 +34,7 @@
   },
   "build": {
     "appId": "com.velaro.chat",
-    "productName": "Velaro Live Chat",
+    "productName": "Velaro",
     "mac": {
       "category": "public.app-category.business",
       "hardenedRuntime": true,
