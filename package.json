@@ -28,6 +28,7 @@
     "cross-env": "^5.2.0",
     "electron": "^5.0.7",
     "electron-builder": "^21.1.1",
+    "electron-notarize": "^0.1.1",
     "tslint": "^5.18.0",
     "typescript": "^3.5.3"
   },
@@ -44,7 +45,8 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
-    }
+    },
+    "afterSign": "scripts/notarize.js"
   },
   "dependencies": {
     "@paulcbetts/system-idle-time": "^1.0.5",
