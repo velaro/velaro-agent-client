@@ -1,11 +1,8 @@
 const { notarize } = require('electron-notarize');
 
 exports.default = async function notarizing(context) {
-
-  // don't early return when we have notarization process configured.
-  return;
-
   const { electronPlatformName, appOutDir } = context;
+
   if (electronPlatformName !== 'darwin') {
     return;
   }
