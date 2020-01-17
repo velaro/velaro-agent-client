@@ -27,7 +27,7 @@
     "copy": "^0.3.2",
     "cross-env": "^5.2.0",
     "electron": "^5.0.7",
-    "electron-builder": "^21.1.1",
+    "electron-builder": "^22.2.0",
     "electron-notarize": "^0.2.1",
     "tslint": "^5.18.0",
     "typescript": "^3.5.3"
