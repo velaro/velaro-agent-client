@@ -270,7 +270,10 @@ function createWindow() {
 
     appIcon.destroy();
     appIcon = null;
-    idle.dispose();
+
+    if (idle !== undefined) {
+      idle.dispose();
+    }
   });
 }
 
