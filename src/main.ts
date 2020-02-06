@@ -301,10 +301,7 @@ function createWindow() {
 
   const menu = buildMenu();
 
-  // disable the default menu
-  Menu.setApplicationMenu(null);
-
-  mainWindow.setMenu(menu);
+  Menu.setApplicationMenu(menu);
 
   // Emitted when the window is closed.
   mainWindow.on("closed", () => {
