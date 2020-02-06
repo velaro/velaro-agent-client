@@ -37,6 +37,9 @@ let childWindows: any[] | BrowserWindow[] = [];
 let appIcon: Tray = null;
 let idle: Idle;
 
+const isMac = process.platform === "darwin";
+const isWin = process.platform === "win32";
+
 function createWindow() {
   // The electron-spellcheck library has a sub-dependency on rxjs. Rxjs has a bunch
   // of source map declarations that electron doesn't know how to handle correctly.
@@ -82,9 +85,11 @@ function createWindow() {
   }, 5000);
 
   mainWindow.on("close", e => {
-    if (shouldExit === false) {
+    if (isWin && shouldExit === false) {
       e.preventDefault();
       mainWindow.hide();
+    } else {
+      quitAndUpdate();
     }
   });
 
@@ -100,9 +105,9 @@ function createWindow() {
    * The default window close functionality is set to minimize
    * the application. Call this method if you actually want to close it.
    */
+
   const exit = () => {
     shouldExit = true;
-    quitAndUpdate();
     app.quit();
   };
 
@@ -189,59 +194,112 @@ function createWindow() {
     mainWindow.show();
   });
 
-  const menu = Menu.buildFromTemplate([
-    {
-      label: "File",
-      submenu: [
-        {
-          label: "Settings",
-          click() {
-            if (settingsWindow) {
-              settingsWindow.focus();
-              return;
-            }
-
-            settingsWindow = new BrowserWindow({
-              title: "Settings",
-              height: 300,
-              width: 400,
-              webPreferences: {
-                nodeIntegration: true
-              }
-            });
-
-            settingsWindow.on("closed", () => {
-              settingsWindow = null;
-            });
-
-            settingsWindow.loadURL(`file://${__dirname}/views/settings.html`);
-
-            childWindows.push(settingsWindow);
-
-            if (isDev()) {
-              settingsWindow.webContents.openDevTools();
-            }
-          }
-        },
-        {
-          label: "Exit",
-          accelerator: "Alt+F4",
-          click() {
-            exit();
-          }
-        }
-      ]
-    },
-    {
-      role: "editMenu"
-    },
-    {
-      role: "viewMenu"
-    },
-    {
-      role: "windowMenu"
+  function openSettingsWindow() {
+    if (settingsWindow) {
+      settingsWindow.focus();
+      return;
     }
-  ]);
+
+    settingsWindow = new BrowserWindow({
+      title: "Settings",
+      height: 300,
+      width: 400,
+      webPreferences: {
+        nodeIntegration: true
+      }
+    });
+
+    settingsWindow.on("closed", () => {
+      settingsWindow = null;
+    });
+
+    settingsWindow.loadURL(`file://${__dirname}/views/settings.html`);
+
+    childWindows.push(settingsWindow);
+
+    if (isDev()) {
+      settingsWindow.webContents.openDevTools();
+    }
+  }
+
+  function buildMenu() {
+    if (isWin) {
+      return buildWinMenu();
+    }
+
+    if (isMac) {
+      return buildMacMenu();
+    }
+  }
+
+  function buildWinMenu() {
+    return Menu.buildFromTemplate([
+      {
+        label: "File",
+        submenu: [
+          {
+            label: "Settings",
+            click() {
+              openSettingsWindow();
+            }
+          },
+          {
+            label: "Exit",
+            accelerator: "Alt+F4",
+            click() {
+              exit();
+            }
+          }
+        ]
+      },
+      {
+        role: "editMenu"
+      },
+      {
+        role: "viewMenu"
+      },
+      {
+        role: "windowMenu"
+      }
+    ]);
+  }
+
+  function buildMacMenu() {
+    return Menu.buildFromTemplate([
+      {
+        label: app.getName(),
+        submenu: [
+          { role: "about" },
+          { type: "separator" },
+          {
+            label: "Settings",
+            click() {
+              openSettingsWindow();
+            }
+          },
+          { type: "separator" },
+          { role: "services" },
+          { type: "separator" },
+          { role: "hide" },
+          { role: "hideothers" },
+          { role: "unhide" },
+          { type: "separator" },
+          { role: "quit" }
+        ]
+      },
+      {
+        role: "editMenu"
+      },
+      {
+        role: "viewMenu"
+      },
+      {
+        role: "windowMenu"
+      }
+    ]);
+  }
+
+  const menu = buildMenu();
 
   // disable the default menu
   Menu.setApplicationMenu(null);
