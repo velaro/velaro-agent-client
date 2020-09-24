@@ -5,7 +5,7 @@ jobs:
   steps:
     - task: NodeTool@0
       inputs:
-        versionSpec: 12.7.0
+        versionSpec: 12.18.4
       displayName: Install Node.js
     - script: yarn
       displayName: Install Packages
@@ -23,7 +23,7 @@ jobs:
   steps:
     - task: NodeTool@0
       inputs:
-        versionSpec: 12.7.0
+        versionSpec: 12.18.4
       displayName: Install Node.js
     - script: yarn
       displayName: Install Packages
