@@ -103,8 +103,8 @@ const show = (notification: Notification) => {
     show: false,
     resizable: false,
     webPreferences: {
-      nodeIntegration: true
-    }
+      nodeIntegration: true,
+    },
   });
 
   if (process.platform === "darwin") {
@@ -119,7 +119,17 @@ const show = (notification: Notification) => {
 
   notificationWindow.webContents.on("did-finish-load", () => {
     notificationWindow.showInactive();
-    notificationWindow.webContents.send("notification-props", { notification });
+
+    notificationWindow.webContents.send("notification-props", {
+      notification: {
+        id: notification.id,
+        message: notification.message,
+        engagementId: notification.engagementId,
+        queueStart: notification.queueStart,
+        queueIncomingRequests: notification.queueIncomingRequests,
+        isNewLineNotification: notification.isNewLineNotification,
+      },
+    });
   });
 
   // notificationWindow.webContents.openDevTools();

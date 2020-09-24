@@ -1,6 +1,5 @@
 import { ipcRenderer } from "electron";
 import { createBadgeData } from "./badge";
-import "./initSpellCheck";
 
 let ON_ACCEPT: any;
 let ON_REJECT: any;

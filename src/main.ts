@@ -6,9 +6,8 @@ import {
   ipcMain,
   Menu,
   nativeImage,
-  session,
   shell,
-  Tray
+  Tray,
 } from "electron";
 
 import * as log from "electron-log";
@@ -41,40 +40,18 @@ const isMac = process.platform === "darwin";
 const isWin = process.platform === "win32";
 
 function createWindow() {
-  // The electron-spellcheck library has a sub-dependency on rxjs. Rxjs has a bunch
-  // of source map declarations that electron doesn't know how to handle correctly.
-  // Because of this, our servers were being spammed with requests for source map files
-  // anytime a user opened dev tools.
-  //
-  // We can use the onBeforeRequest handler to intercept requests for source map files
-  // and cancel those requests.
-  //
-  // This handler accepts an optional filter parameter that would make it simple to
-  // filter urls like *.js.map, but it's broken.
-  // https://electronjs.org/docs/api/web-request
-  // https://github.com/electron/electron/issues/11371
-
-  session.defaultSession.webRequest.onBeforeRequest((details, callback) => {
-    if (details.url.indexOf(".js.map") > -1) {
-      callback({ cancel: true });
-    } else {
-      callback({});
-    }
-  });
-
   mainWindow = new BrowserWindow({
     title: "Velaro",
     width: 1200,
     height: 800,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
-      nodeIntegration: false
-    }
+      nodeIntegration: false,
+      spellcheck: true,
+    },
   });
 
-  mainWindow.webContents.session.clearCache(() => {
-    log.info("cache cleared.");
-  });
+  mainWindow.webContents.session.clearCache();
 
   mainWindow.loadURL(`file://${__dirname}/views/splash.html`);
 
@@ -84,7 +61,7 @@ function createWindow() {
     });
   }, 5000);
 
-  mainWindow.on("close", e => {
+  mainWindow.on("close", (e) => {
     if (isWin && shouldExit === false) {
       e.preventDefault();
       mainWindow.hide();
@@ -156,22 +133,22 @@ function createWindow() {
         accelerator: "Alt+F4",
         click() {
           exit();
-        }
-      }
+        },
+      },
     ];
 
     const loginButton = {
       label: "Login",
       click() {
         login();
-      }
+      },
     };
 
     const logoutButton = {
       label: "Logout",
       click() {
         logout();
-      }
+      },
     };
 
     if (loggedIn) {
@@ -205,8 +182,8 @@ function createWindow() {
       height: 300,
       width: 400,
       webPreferences: {
-        nodeIntegration: true
-      }
+        nodeIntegration: true,
+      },
     });
 
     settingsWindow.on("closed", () => {
@@ -241,26 +218,26 @@ function createWindow() {
             label: "Settings",
             click() {
               openSettingsWindow();
-            }
+            },
           },
           {
             label: "Exit",
             accelerator: "Alt+F4",
             click() {
               exit();
-            }
-          }
-        ]
+            },
+          },
+        ],
       },
       {
-        role: "editMenu"
+        role: "editMenu",
       },
       {
-        role: "viewMenu"
+        role: "viewMenu",
       },
       {
-        role: "windowMenu"
-      }
+        role: "windowMenu",
+      },
     ]);
   }
 
@@ -275,27 +252,27 @@ function createWindow() {
             label: "Settings",
             click() {
               openSettingsWindow();
-            }
+            },
           },
           { type: "separator" },
           { role: "services" },
           { type: "separator" },
           { role: "hide" },
-          { role: "hideothers" },
+          { role: "hideOthers" },
           { role: "unhide" },
           { type: "separator" },
-          { role: "quit" }
-        ]
+          { role: "quit" },
+        ],
       },
       {
-        role: "editMenu"
+        role: "editMenu",
       },
       {
-        role: "viewMenu"
+        role: "viewMenu",
       },
       {
-        role: "windowMenu"
-      }
+        role: "windowMenu",
+      },
     ]);
   }
 
@@ -312,7 +289,7 @@ function createWindow() {
 
     settingsWindow = null;
 
-    childWindows.forEach(win => {
+    childWindows.forEach((win) => {
       try {
         win.close();
       } catch (err) {
