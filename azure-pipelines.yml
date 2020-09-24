@@ -1,7 +1,7 @@
 jobs:
 - job: Windows
   pool:
-    vmImage: VS2017-Win2016
+    vmImage: vs2017-win2016
   steps:
     - task: NodeTool@0
       inputs:
@@ -16,7 +16,10 @@ jobs:
 
 - job: macOS
   pool:
-    vmImage: macOS 10.13
+    vmImage: macOS-10.15
+  variables:
+    - name: CSC_LINK
+    - value: https://v10prodappsettings.blob.core.windows.net/certs/velaro_mac.p12
   steps:
     - task: NodeTool@0
       inputs:
