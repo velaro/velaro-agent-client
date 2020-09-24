@@ -19,7 +19,7 @@ jobs:
     vmImage: macOS-10.15
   variables:
     - name: CSC_LINK
-    - value: https://v10prodappsettings.blob.core.windows.net/certs/velaro_mac.p12
+      value: https://v10prodappsettings.blob.core.windows.net/certs/velaro_mac.p12
   steps:
     - task: NodeTool@0
       inputs:
