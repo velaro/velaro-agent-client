@@ -20,9 +20,9 @@
     "dist:mac:zip": "scripts/deploy/mac-zip.sh"
   },
   "devDependencies": {
-    "@types/jquery": "^3.3.30",
-    "@types/react": "^16.8.23",
-    "@types/react-dom": "^16.8.5",
+    "@types/jquery": "^3.5.1",
+    "@types/react": "^16.9.49",
+    "@types/react-dom": "^16.9.8",
     "copy": "^0.3.2",
     "cross-env": "^7.0.2",
     "electron": "^10.1.2",
@@ -34,6 +34,9 @@
   "build": {
     "appId": "com.velaro.chat",
     "productName": "Velaro",
+    "win": {
+      "verifyUpdateCodeSignature": false
+    },
     "mac": {
       "category": "public.app-category.business",
       "hardenedRuntime": true,
@@ -51,8 +54,8 @@
     "@paulcbetts/system-idle-time": "^1.0.5",
     "electron-log": "^4.2.4",
     "electron-updater": "^4.3.5",
-    "jquery": "^3.4.1",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6"
+    "jquery": "^3.5.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
   }
 }

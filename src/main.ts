@@ -5,6 +5,7 @@ import {
   BrowserWindow,
   ipcMain,
   Menu,
+  MenuItem,
   nativeImage,
   shell,
   Tray,
@@ -47,11 +48,71 @@ function createWindow() {
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,
-      spellcheck: true,
     },
   });
 
   mainWindow.webContents.session.clearCache();
+
+  // context menu spellcheck suggestions
+
+  mainWindow.webContents.on("context-menu", (event, params) => {
+    const menu = new Menu();
+
+    // Add each spelling suggestion
+    for (const suggestion of params.dictionarySuggestions) {
+      menu.append(
+        new MenuItem({
+          label: suggestion,
+          click: () => mainWindow.webContents.replaceMisspelling(suggestion),
+        })
+      );
+    }
+
+    // Allow users to add the misspelled word to the dictionary
+    if (params.misspelledWord) {
+      menu.append(
+        new MenuItem({
+          label: "Add to dictionary",
+          click: () =>
+            mainWindow.webContents.session.addWordToSpellCheckerDictionary(
+              params.misspelledWord
+            ),
+        })
+      );
+
+      menu.append(
+        new MenuItem({
+          type: "separator",
+        })
+      );
+    }
+
+    menu.append(
+      new MenuItem({
+        id: "cut",
+        label: "C&ut",
+        role: "cut",
+      })
+    );
+
+    menu.append(
+      new MenuItem({
+        id: "copy",
+        label: "&Copy",
+        role: "copy",
+      })
+    );
+
+    menu.append(
+      new MenuItem({
+        id: "paste",
+        label: "&Paste",
+        role: "paste",
+      })
+    );
+
+    menu.popup();
+  });
 
   mainWindow.loadURL(`file://${__dirname}/views/splash.html`);
 
