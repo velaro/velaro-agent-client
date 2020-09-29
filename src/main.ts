@@ -17,7 +17,7 @@ import Idle from "./idle";
 import { notify, removeAllNotifications } from "./notifier";
 import * as resources from "./resources";
 import * as storage from "./storage";
-import { initUpdater, quitAndUpdate } from "./update";
+import { initUpdater } from "./update";
 import { isDev } from "./utils";
 
 interface MenuOption {
@@ -126,8 +126,6 @@ function createWindow() {
     if (isWin && shouldExit === false) {
       e.preventDefault();
       mainWindow.hide();
-    } else {
-      quitAndUpdate();
     }
   });
 
