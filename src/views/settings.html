@@ -13,18 +13,22 @@
 
       label {
         display: inline-block;
-        margin-bottom: 3px;
+        margin-bottom: 12px;
       }
 
       input {
         padding: 3px 6px;
         margin-bottom: 10px;
+        max-width: 30px;
       }
 
       button {
         padding: 5px 10px;
-        background: #ccc;
-        border: 1px solid #666;
+        color: #fff;
+        background: #4c75ab;
+        border: none;
+        border-radius: 3px;
+        padding: 8px 16px;
       }
 
       .version-container {
@@ -40,20 +44,20 @@
       <div>
         <input type="hidden" value="2700" id="ReloadTime" />
         <div>
-          <label for="idleTimeEnabled">Enable Idle</label>
           <input type="checkbox" id="idleTimeEnabled" name="idleTimeEnabled" />
+          <label for="idleTimeEnabled">Enable Idle</label>
         </div>
         <div>
           <label for="idleSeconds">Idle Time</label>
-          <input type="text" id="idleSeconds" name="idleSeconds" /> seconds
+          <input type="number" id="idleSeconds" name="idleSeconds" /> seconds
         </div>
         <div id="auto-update-container">
-          <label for="autoUpdatesEnabled">Auto Update</label>
           <input
             type="checkbox"
             id="autoUpdatesEnabled"
             name="autoUpdatesEnabled"
           />
+          <label for="autoUpdatesEnabled">Auto Update</label>
         </div>
       </div>
       <button type="submit">Save settings</button>
