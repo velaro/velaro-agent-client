@@ -3,6 +3,7 @@ import { autoUpdater } from "electron-updater";
 import * as storage from "./storage";
 import * as config from "./updateConfig.json";
 
+let updateDownloaded = false;
 let initialized = false;
 
 const settings = storage.get("settings") || {};
@@ -44,6 +45,28 @@ export function initUpdater() {
   initialized = true;
   log.transports.file.level = "debug";
   autoUpdater.logger = log;
-  autoUpdater.autoDownload = true;
-  autoUpdater.autoInstallOnAppQuit = true;
+  autoUpdater.autoInstallOnAppQuit = false;
+  autoUpdater.checkForUpdatesAndNotify();
 }
+
+export function quitAndUpdate() {
+  if (updateDownloaded) {
+    autoUpdater.quitAndInstall();
+  }
+}
+
+// autoUpdater.on("error", () => {
+// });
+
+// autoUpdater.on("checking-for-update", args => {
+// });
+
+// autoUpdater.on("update-not-available", args => {
+// });
+
+// autoUpdater.on("download-progress", args => {
+// });
+
+autoUpdater.on("update-downloaded", () => {
+  updateDownloaded = true;
+});
