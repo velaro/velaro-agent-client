@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Enable auto updates
-cp src/updateConfig.disabled.json src/updateConfig.json
+cp src/updateConfig.enabled.json src/updateConfig.json
 
 # Build and copy
 yarn build
