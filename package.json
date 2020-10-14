@@ -42,8 +42,8 @@
       "entitlementsInherit": "build/entitlements.mac.plist"
     },
     "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": false
+      "oneClick": true,
+      "perMachine": false
     },
     "afterSign": "scripts/notarize.js"
   },
