@@ -67,20 +67,30 @@ const Buttons = (props: ButtonProps) => {
 
   return (
     <div className="buttons">
-      {// show the accept button for queued chats
-      queueIncomingRequests && AcceptButton(props)}
+      {
+        // show the accept button for queued chats
+        queueIncomingRequests && AcceptButton(props)
+      }
 
-      {// show the reject button for queued chats
-      queueIncomingRequests && RejectButton(props)}
+      {
+        // show the reject button for queued chats
+        queueIncomingRequests && RejectButton(props)
+      }
 
-      {// always display the ignore button
-      IgnoreButton(props)}
+      {
+        // always display the ignore button
+        IgnoreButton(props)
+      }
 
-      {// show the view button for auto-routed chats
-      !queueIncomingRequests && ViewButton(props)}
+      {
+        // show the view button for auto-routed chats
+        !queueIncomingRequests && ViewButton(props)
+      }
 
-      {// always display the info button
-      InfoButton(props)}
+      {
+        // always display the info button
+        InfoButton(props)
+      }
     </div>
   );
 };
@@ -103,13 +113,13 @@ function Notification(props: NotificationProps) {
     engagementId,
     queueStart,
     queueIncomingRequests,
-    isNewLineNotification
+    isNewLineNotification,
   } = props.notification;
 
   React.useEffect(() => {
     ipcRenderer.send("renderComplete", {
       notificationId: id,
-      scrollHeight: document.body.scrollHeight
+      scrollHeight: document.body.scrollHeight,
     });
   }, []);
 
@@ -121,8 +131,12 @@ function Notification(props: NotificationProps) {
         </div>
         <div className="col" style={{ width: "100%" }}>
           <div className="message">
-            {message}&nbsp;
-            {queueIncomingRequests && <QueueTimer queueStart={queueStart} />}
+            <div>{message}</div>
+            {queueIncomingRequests && (
+              <div>
+                <QueueTimer queueStart={queueStart} />
+              </div>
+            )}
           </div>
         </div>
       </div>
