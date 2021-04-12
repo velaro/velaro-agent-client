@@ -30,6 +30,7 @@ interface ButtonProps {
   engagementId?: any;
   queueIncomingRequests: any;
   isNewLineNotification: any;
+  rejectEnabled: boolean;
 }
 
 const AcceptButton = (props: ButtonProps) => {
@@ -58,7 +59,7 @@ const InfoButton = (props: ButtonProps) => {
 };
 
 const Buttons = (props: ButtonProps) => {
-  const { queueIncomingRequests, isNewLineNotification } = props;
+  const { rejectEnabled, queueIncomingRequests, isNewLineNotification } = props;
 
   // newline notification just has dismiss button
   if (isNewLineNotification) {
@@ -74,7 +75,7 @@ const Buttons = (props: ButtonProps) => {
 
       {
         // show the reject button for queued chats
-        queueIncomingRequests && RejectButton(props)
+        rejectEnabled && queueIncomingRequests && RejectButton(props)
       }
 
       {
@@ -103,6 +104,7 @@ interface NotificationProps {
     queueStart: any;
     queueIncomingRequests: any;
     isNewLineNotification: boolean;
+    rejectEnabled: boolean;
   };
 }
 
@@ -114,6 +116,7 @@ function Notification(props: NotificationProps) {
     queueStart,
     queueIncomingRequests,
     isNewLineNotification,
+    rejectEnabled,
   } = props.notification;
 
   React.useEffect(() => {
@@ -145,6 +148,7 @@ function Notification(props: NotificationProps) {
         engagementId={engagementId}
         queueIncomingRequests={queueIncomingRequests}
         isNewLineNotification={isNewLineNotification}
+        rejectEnabled={rejectEnabled}
       />
     </div>
   );

@@ -17,6 +17,7 @@ interface Opts {
   queueStart: any;
   queueIncomingRequests: any;
   isNewLineNotification: any;
+  rejectEnabled: boolean;
   autoHide: boolean;
   autoHideDelay: number;
 }
@@ -30,6 +31,7 @@ class Notification {
   public queueStart: any;
   public queueIncomingRequests: any;
   public isNewLineNotification: any;
+  public rejectEnabled: boolean;
   public autoHideDelay: number;
   public notificationWindow: electron.BrowserWindow;
   public height: number = 0;
@@ -42,6 +44,7 @@ class Notification {
     this.engagementId = opts.engagementId;
     this.queueStart = opts.queueStart;
     this.queueIncomingRequests = opts.queueIncomingRequests;
+    this.rejectEnabled = opts.rejectEnabled;
     this.isNewLineNotification = opts.isNewLineNotification;
 
     if (opts.autoHide !== undefined) {
@@ -128,6 +131,7 @@ const show = (notification: Notification) => {
         queueStart: notification.queueStart,
         queueIncomingRequests: notification.queueIncomingRequests,
         isNewLineNotification: notification.isNewLineNotification,
+        rejectEnabled: notification.rejectEnabled,
       },
     });
   });
