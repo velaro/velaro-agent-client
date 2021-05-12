@@ -28,6 +28,7 @@ interface MenuOption {
 
 app.commandLine.appendSwitch("--autoplay-policy", "no-user-gesture-required");
 app.setAppUserModelId("com.velaro.chat");
+app.setAsDefaultProtocolClient("velaro-lc")
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
