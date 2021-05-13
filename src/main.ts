@@ -31,7 +31,20 @@ const CLIENT_PROTOCOL = "velaro-lc";
 
 app.commandLine.appendSwitch("--autoplay-policy", "no-user-gesture-required");
 app.setAppUserModelId("com.velaro.chat");
-app.setAsDefaultProtocolClient(CLIENT_PROTOCOL);
+
+// remove so we can register each time as we run the app.
+app.removeAsDefaultProtocolClient(CLIENT_PROTOCOL);
+
+// If we are running a non-packaged version of the app && on windows
+if (isDev && process.platform === "win32") {
+  // Set the path of electron.exe and your app.
+  // These two additional parameters are only available on windows.
+  app.setAsDefaultProtocolClient(CLIENT_PROTOCOL, process.execPath, [
+    path.resolve(process.argv[1]),
+  ]);
+} else {
+  app.setAsDefaultProtocolClient(CLIENT_PROTOCOL);
+}
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -45,7 +58,7 @@ const isMac = process.platform === "darwin";
 const isWin = process.platform === "win32";
 
 function createWindow() {
-  // if we hit the 
+  // if we hit the
   session.defaultSession.webRequest.onBeforeSendHeaders(
     {
       urls: [`${config.consoleUrl}/*`],
@@ -393,7 +406,7 @@ function initApplication() {
     return;
   }
 
-  app.on("second-instance", () => {
+  app.on("second-instance", (event, commandLine) => {
     // User tried to run a second instance, we should focus our window.
     if (mainWindow) {
       if (mainWindow.isMinimized()) {
@@ -402,7 +415,19 @@ function initApplication() {
       mainWindow.show();
       mainWindow.focus();
     }
+
+    const appLink = commandLine.find(
+      (x) => x.indexOf(`${CLIENT_PROTOCOL}://`) >= 0
+    );
+
+    if (appLink) {
+      handleAppLink(appLink);
+    }
   });
+
+  function handleAppLink(link: string) {
+    console.log("handling app link", link);
+  }
 
   const settings = storage.get("settings") || {};
 
