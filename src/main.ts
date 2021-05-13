@@ -19,7 +19,7 @@ import { notify, removeAllNotifications } from "./notifier";
 import * as resources from "./resources";
 import * as storage from "./storage";
 import { initUpdater } from "./update";
-import { isDev } from "./utils";
+import { isDev, parseQueryString } from "./utils";
 
 interface MenuOption {
   label: string;
@@ -426,7 +426,13 @@ function initApplication() {
   });
 
   function handleAppLink(link: string) {
-    console.log("handling app link", link);
+    if (link.indexOf(`${CLIENT_PROTOCOL}://login`) === 0) {
+      const qs = link.split("?");
+      const data = parseQueryString(`?${qs[1]}`);
+      mainWindow.loadURL(
+        `${config.consoleUrl}/Account/LoginDesktopExchange?token=${data.token}`
+      );
+    }
   }
 
   const settings = storage.get("settings") || {};
