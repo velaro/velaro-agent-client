@@ -2,6 +2,7 @@ import * as path from "path";
 
 import {
   app,
+  session,
   BrowserWindow,
   ipcMain,
   Menu,
@@ -26,9 +27,11 @@ interface MenuOption {
   click(): void;
 }
 
+const CLIENT_PROTOCOL = "velaro-lc";
+
 app.commandLine.appendSwitch("--autoplay-policy", "no-user-gesture-required");
 app.setAppUserModelId("com.velaro.chat");
-app.setAsDefaultProtocolClient("velaro-lc")
+app.setAsDefaultProtocolClient(CLIENT_PROTOCOL);
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -42,6 +45,17 @@ const isMac = process.platform === "darwin";
 const isWin = process.platform === "win32";
 
 function createWindow() {
+  // if we hit the 
+  session.defaultSession.webRequest.onBeforeSendHeaders(
+    {
+      urls: [`${config.consoleUrl}/*`],
+    },
+    (details, callback) => {
+      details.requestHeaders["Client-Protocol"] = CLIENT_PROTOCOL;
+      callback({ requestHeaders: details.requestHeaders });
+    }
+  );
+
   mainWindow = new BrowserWindow({
     title: "Velaro",
     width: 1200,
