@@ -1,5 +1,5 @@
 const development = {
-  consoleUrl: "http://consolenew.local.velaro.com"
+  consoleUrl: "https://consolenew.local.velaro.com"
 };
 
 const test = {
