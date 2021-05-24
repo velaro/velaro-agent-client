@@ -36,7 +36,7 @@ app.setAppUserModelId("com.velaro.chat");
 app.removeAsDefaultProtocolClient(CLIENT_PROTOCOL);
 
 // If we are running a non-packaged version of the app && on windows
-if (isDev && process.platform === "win32") {
+if (isDev() && process.platform === "win32") {
   // Set the path of electron.exe and your app.
   // These two additional parameters are only available on windows.
   app.setAsDefaultProtocolClient(CLIENT_PROTOCOL, process.execPath, [
@@ -145,7 +145,19 @@ function createWindow() {
   mainWindow.loadURL(`file://${__dirname}/views/splash.html`);
 
   setTimeout(() => {
-    mainWindow.loadURL(config.consoleUrl).catch(() => {
+    let url = config.consoleUrl;
+
+    // on initial load, need to check protocol.
+
+    const protocolLink = (process.argv || []).find(
+      (x) => x.indexOf(`${CLIENT_PROTOCOL}://`) >= 0
+    );
+
+    if (isLoginLink(protocolLink)) {
+      url = getDesktopExchangeUrl(protocolLink);
+    }
+
+    mainWindow.loadURL(url).catch(() => {
       mainWindow.loadURL(`file://${__dirname}/views/offline.html`);
     });
   }, 5000);
@@ -425,13 +437,10 @@ function initApplication() {
     }
   });
 
-  function handleAppLink(link: string) {
-    if (link.indexOf(`${CLIENT_PROTOCOL}://login`) === 0) {
-      const qs = link.split("?");
-      const data = parseQueryString(`?${qs[1]}`);
-      mainWindow.loadURL(
-        `${config.consoleUrl}/Account/LoginDesktopExchange?token=${data.token}`
-      );
+  function handleAppLink(loginLink: string) {
+    if (isLoginLink(loginLink)) {
+      const desktopExchangeUrl = getDesktopExchangeUrl(loginLink);
+      mainWindow.loadURL(desktopExchangeUrl);
     }
   }
 
@@ -566,6 +575,18 @@ function initApplication() {
       createWindow();
     }
   });
+}
+
+function isLoginLink(protocolLink: string | undefined) {
+  return (
+    protocolLink && protocolLink.indexOf(`${CLIENT_PROTOCOL}://login`) === 0
+  );
+}
+
+function getDesktopExchangeUrl(loginLink: string) {
+  const qs = loginLink.split("?");
+  const data = parseQueryString(`?${qs[1]}`);
+  return `${config.consoleUrl}/Account/LoginDesktopExchange?token=${data.token}`;
 }
 
 initApplication();
