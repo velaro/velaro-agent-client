@@ -437,6 +437,11 @@ function initApplication() {
     }
   });
 
+  app.on("open-url", function (event, url) {
+    event.preventDefault();
+    handleAppLink(url);
+  });
+
   function handleAppLink(loginLink: string) {
     if (isLoginLink(loginLink)) {
       const desktopExchangeUrl = getDesktopExchangeUrl(loginLink);
