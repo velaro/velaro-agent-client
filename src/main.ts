@@ -2,6 +2,7 @@ import * as path from "path";
 
 import {
   app,
+  session,
   BrowserWindow,
   ipcMain,
   Menu,
@@ -18,7 +19,7 @@ import { notify, removeAllNotifications } from "./notifier";
 import * as resources from "./resources";
 import * as storage from "./storage";
 import { initUpdater } from "./update";
-import { isDev } from "./utils";
+import { isDev, parseQueryString } from "./utils";
 
 interface MenuOption {
   label: string;
@@ -26,9 +27,24 @@ interface MenuOption {
   click(): void;
 }
 
+const CLIENT_PROTOCOL = "velaro-lc";
+
 app.commandLine.appendSwitch("--autoplay-policy", "no-user-gesture-required");
 app.setAppUserModelId("com.velaro.chat");
-app.setAsDefaultProtocolClient("velaro-lc")
+
+// remove so we can register each time as we run the app.
+app.removeAsDefaultProtocolClient(CLIENT_PROTOCOL);
+
+// If we are running a non-packaged version of the app && on windows
+if (isDev() && process.platform === "win32") {
+  // Set the path of electron.exe and your app.
+  // These two additional parameters are only available on windows.
+  app.setAsDefaultProtocolClient(CLIENT_PROTOCOL, process.execPath, [
+    path.resolve(process.argv[1]),
+  ]);
+} else {
+  app.setAsDefaultProtocolClient(CLIENT_PROTOCOL);
+}
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -42,6 +58,16 @@ const isMac = process.platform === "darwin";
 const isWin = process.platform === "win32";
 
 function createWindow() {
+  session.defaultSession.webRequest.onBeforeSendHeaders(
+    {
+      urls: [`${config.consoleUrl}/*`],
+    },
+    (details, callback) => {
+      details.requestHeaders["Client-Protocol"] = CLIENT_PROTOCOL;
+      callback({ requestHeaders: details.requestHeaders });
+    }
+  );
+
   mainWindow = new BrowserWindow({
     title: "Velaro",
     width: 1200,
@@ -118,7 +144,19 @@ function createWindow() {
   mainWindow.loadURL(`file://${__dirname}/views/splash.html`);
 
   setTimeout(() => {
-    mainWindow.loadURL(config.consoleUrl).catch(() => {
+    let url = config.consoleUrl;
+
+    // on initial load, need to check protocol.
+
+    const protocolLink = (process.argv || []).find(
+      (x) => x.indexOf(`${CLIENT_PROTOCOL}://`) >= 0
+    );
+
+    if (isLoginLink(protocolLink)) {
+      url = getDesktopExchangeUrl(protocolLink);
+    }
+
+    mainWindow.loadURL(url).catch(() => {
       mainWindow.loadURL(`file://${__dirname}/views/offline.html`);
     });
   }, 5000);
@@ -379,7 +417,7 @@ function initApplication() {
     return;
   }
 
-  app.on("second-instance", () => {
+  app.on("second-instance", (event, commandLine) => {
     // User tried to run a second instance, we should focus our window.
     if (mainWindow) {
       if (mainWindow.isMinimized()) {
@@ -388,7 +426,27 @@ function initApplication() {
       mainWindow.show();
       mainWindow.focus();
     }
+
+    const appLink = commandLine.find(
+      (x) => x.indexOf(`${CLIENT_PROTOCOL}://`) >= 0
+    );
+
+    if (appLink) {
+      handleAppLink(appLink);
+    }
   });
+
+  app.on("open-url", function (event, url) {
+    event.preventDefault();
+    handleAppLink(url);
+  });
+
+  function handleAppLink(loginLink: string) {
+    if (isLoginLink(loginLink)) {
+      const desktopExchangeUrl = getDesktopExchangeUrl(loginLink);
+      mainWindow.loadURL(desktopExchangeUrl);
+    }
+  }
 
   const settings = storage.get("settings") || {};
 
@@ -521,6 +579,18 @@ function initApplication() {
       createWindow();
     }
   });
+}
+
+function isLoginLink(protocolLink: string | undefined) {
+  return (
+    protocolLink && protocolLink.indexOf(`${CLIENT_PROTOCOL}://login`) === 0
+  );
+}
+
+function getDesktopExchangeUrl(loginLink: string) {
+  const qs = loginLink.split("?");
+  const data = parseQueryString(`?${qs[1]}`);
+  return `${config.consoleUrl}/Account/LoginDesktopExchange?token=${data.token}`;
 }
 
 initApplication();
