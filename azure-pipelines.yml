@@ -30,8 +30,6 @@ jobs:
   variables:
     - name: CSC_LINK
       value: $(cert.secureFilePath)
-    - name: CSC_KEY_PASSWORD
-      value: $(CSC_KEY_PASSWORD)
   steps:
     - task: NodeTool@0
       inputs:
