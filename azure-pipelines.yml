@@ -2,11 +2,19 @@ jobs:
 - job: Windows
   pool:
     vmImage: vs2017-win2016
+  variables:
+    - name: CSC_LINK
+      value: $(cert.secureFilePath)
   steps:
     - task: NodeTool@0
       inputs:
         versionSpec: 12.18.4
       displayName: Install Node.js
+    - task: DownloadSecureFile@1
+      name: cert
+      displayName: 'Download CA certificate'
+      inputs:
+        secureFile: 'velaro_win.pfx'
     - script: yarn
       displayName: Install Packages
     - script: yarn dist:win:nsis
@@ -19,12 +27,17 @@ jobs:
     vmImage: macOS-10.15
   variables:
     - name: CSC_LINK
-      value: https://v10prodappsettings.blob.core.windows.net/certs/velaro_mac.p12
+      value: $(cert.secureFilePath)
   steps:
     - task: NodeTool@0
       inputs:
         versionSpec: 12.18.4
       displayName: Install Node.js
+    - task: DownloadSecureFile@1
+      name: cert
+      displayName: 'Download CA certificate'
+      inputs:
+        secureFile: 'velaro_mac.p12'
     - script: yarn
       displayName: Install Packages
     - script: yarn dist:mac:dmg
