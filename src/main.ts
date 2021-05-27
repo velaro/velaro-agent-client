@@ -438,16 +438,15 @@ function initApplication() {
 
   app.on("open-url", function (event, url) {
     event.preventDefault();
-
-    if (mainWindow === null) {
-      createWindow();
-    }
-
     handleAppLink(url);
   });
 
   function handleAppLink(loginLink: string) {
     if (isLoginLink(loginLink)) {
+      if (!mainWindow) {
+        createWindow();
+      }
+
       const desktopExchangeUrl = getDesktopExchangeUrl(loginLink);
       mainWindow.loadURL(desktopExchangeUrl);
     }
