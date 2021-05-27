@@ -34,6 +34,9 @@
   "build": {
     "appId": "com.velaro.chat",
     "productName": "Velaro",
+    "win": {
+      "publisherName": "Velaro, Inc."
+    },
     "mac": {
       "category": "public.app-category.business",
       "hardenedRuntime": true,
