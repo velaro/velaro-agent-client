@@ -3,7 +3,7 @@ const development = {
 };
 
 const test = {
-  consoleUrl: "https://enterprise-app.velaro.com"
+  consoleUrl: "https://enterprise-app-stage.velaro.com"
 };
 
 const staging = {
