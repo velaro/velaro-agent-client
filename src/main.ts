@@ -438,6 +438,11 @@ function initApplication() {
 
   app.on("open-url", function (event, url) {
     event.preventDefault();
+
+    if (mainWindow === null) {
+      createWindow();
+    }
+
     handleAppLink(url);
   });
 
