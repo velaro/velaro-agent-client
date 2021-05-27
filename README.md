@@ -1,5 +1,5 @@
 
-[![Build Status](https://dev.azure.com/ryanw51/try-pipelines/_apis/build/status/rwhitmire.try-pipelines?branchName=master)](https://dev.azure.com/ryanw51/try-pipelines/_build/latest?definitionId=1&branchName=master)
+[![Build Status](https://dev.azure.com/velaro/velaro-agent-client/_apis/build/status/velaro.velaro-agent-client?branchName=master)](https://dev.azure.com/velaro/velaro-agent-client/_build/latest?definitionId=1&branchName=master)
 
 ### Development
 Install the following:
