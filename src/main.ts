@@ -28,6 +28,7 @@ interface MenuOption {
 }
 
 const CLIENT_PROTOCOL = "velaro-lc";
+let macUrlLink: string | undefined;
 
 app.commandLine.appendSwitch("--autoplay-policy", "no-user-gesture-required");
 app.setAppUserModelId("com.velaro.chat");
@@ -148,9 +149,7 @@ function createWindow() {
 
     // on initial load, need to check protocol.
 
-    const protocolLink = (process.argv || []).find(
-      (x) => x.indexOf(`${CLIENT_PROTOCOL}://`) >= 0
-    );
+    const protocolLink = getProtocolLink(process.argv || []);
 
     if (isLoginLink(protocolLink)) {
       url = getDesktopExchangeUrl(protocolLink);
@@ -427,26 +426,22 @@ function initApplication() {
       mainWindow.focus();
     }
 
-    const appLink = commandLine.find(
-      (x) => x.indexOf(`${CLIENT_PROTOCOL}://`) >= 0
-    );
+    const appLink = getProtocolLink(commandLine)
 
     if (appLink) {
       handleAppLink(appLink);
     }
   });
 
+  // this event occurs on mac only
+
   app.on("open-url", function (event, url) {
     event.preventDefault();
-    handleAppLink(url);
+    macUrlLink = url;
   });
 
   function handleAppLink(loginLink: string) {
     if (isLoginLink(loginLink)) {
-      if (!mainWindow) {
-        createWindow();
-      }
-
       const desktopExchangeUrl = getDesktopExchangeUrl(loginLink);
       mainWindow.loadURL(desktopExchangeUrl);
     }
@@ -595,6 +590,14 @@ function getDesktopExchangeUrl(loginLink: string) {
   const qs = loginLink.split("?");
   const data = parseQueryString(`?${qs[1]}`);
   return `${config.consoleUrl}/Account/LoginDesktopExchange?token=${data.token}`;
+}
+
+function getProtocolLink(args: string[]) {
+  if (macUrlLink) {
+    return macUrlLink;
+  }
+
+  return args.find((x) => x.indexOf(`${CLIENT_PROTOCOL}://`) >= 0);
 }
 
 initApplication();
