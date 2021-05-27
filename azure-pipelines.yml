@@ -2,13 +2,11 @@ jobs:
 - job: Windows
   pool:
     vmImage: vs2017-win2016
-  variables:
-    - name: CSC_LINK
-      value: ''
-      # value: $(cert.secureFilePath)
-    - name: CSC_KEY_PASSWORD
-      value: ''
-      # value: $(WIN_CSC_KEY_PASSWORD)
+  # variables:
+  #   - name: CSC_LINK
+  #     value: $(cert.secureFilePath)
+  #   - name: CSC_KEY_PASSWORD
+  #     value: $(WIN_CSC_KEY_PASSWORD)
   steps:
     - task: NodeTool@0
       inputs:
