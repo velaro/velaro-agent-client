@@ -120,9 +120,13 @@ function Notification(props: NotificationProps) {
   } = props.notification;
 
   React.useEffect(() => {
-    ipcRenderer.send("renderComplete", {
-      notificationId: id,
-      scrollHeight: document.body.scrollHeight,
+    // wait for the next tick to push the scroll height,
+    // otherwise the notification will be chopped off.
+    setTimeout(() => {
+      ipcRenderer.send("renderComplete", {
+        notificationId: id,
+        scrollHeight: document.body.scrollHeight,
+      });
     });
   }, []);
 
