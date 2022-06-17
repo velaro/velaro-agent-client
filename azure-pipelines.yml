@@ -10,7 +10,7 @@ jobs:
   steps:
     - task: NodeTool@0
       inputs:
-        versionSpec: 12.18.4
+        versionSpec: 16.15.1
       displayName: Install Node.js
     - task: DownloadSecureFile@1
       name: cert
@@ -33,7 +33,7 @@ jobs:
   steps:
     - task: NodeTool@0
       inputs:
-        versionSpec: 12.18.4
+        versionSpec: 16.15.1
       displayName: Install Node.js
     - task: DownloadSecureFile@1
       name: cert
