@@ -26,21 +26,21 @@ jobs:
 
 - job: macOS
   pool:
-    vmImage: macOS-latest
+    vmImage: macOS-11
   variables:
     - name: CSC_LINK
       value: $(cert.secureFilePath)
   steps:
     - task: NodeTool@0
       inputs:
-        versionSpec: 14.19.1
+        versionSpec: 16.15.1
       displayName: Install Node.js
     - task: DownloadSecureFile@1
       name: cert
       displayName: 'Download CA certificate'
       inputs:
         secureFile: 'velaro_mac.p12'
-    - script: yarn install -std=c++17
+    - script: yarn install
       displayName: Install Packages
     - script: yarn dist:mac:dmg
       displayName: Deploy DMG

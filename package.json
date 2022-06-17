@@ -60,7 +60,7 @@
     "afterSign": "scripts/notarize.js"
   },
   "dependencies": {
-    "@paulcbetts/system-idle-time": "^1.0.5",
+    "@velaro/system-idle-time": "https://github.com/velaro/node-system-idle-time#cf30aaa",
     "electron-log": "^4.4.7",
     "electron-updater": "^5.0.1",
     "jquery": "^3.5.1",

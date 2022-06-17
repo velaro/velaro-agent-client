@@ -1,4 +1,4 @@
-import { getIdleTime } from "@paulcbetts/system-idle-time";
+import { getIdleTime } from "@velaro/system-idle-time";
 import { EventEmitter } from "events";
 
 export default class Idle {

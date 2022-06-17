@@ -82,14 +82,6 @@
     lodash "^4.17.15"
     tmp-promise "^3.0.2"
 
-"@paulcbetts/system-idle-time@^1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@paulcbetts/system-idle-time/-/system-idle-time-1.0.5.tgz#e54192e9134144a13699b55b52827274bd2d5b85"
-  integrity sha512-H0+wDm1yHmVHsmZBSU8AtjYX5nAtivSGlwun3xSLvPI+xu9TU6J6EpgJlA5JtMpc6mRAB1NacGMTeU7cvkdcvA==
-  dependencies:
-    bindings "~1.2.1"
-    nan "^2.0.0"
-
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
@@ -216,6 +208,13 @@
   integrity sha512-gmEaFwpj/7f/ROdtIlci1R1VYU1J4j95m8T+Tj3iBgiBFKg1foE/PSl93bBd5T9LDXNPo8UlNN6W0qwD8O5OaA==
   dependencies:
     "@types/yargs-parser" "*"
+
+"@velaro/system-idle-time@https://github.com/velaro/node-system-idle-time#cf30aaa":
+  version "1.0.5"
+  resolved "https://github.com/velaro/node-system-idle-time#cf30aaad49647f0f6abf25db35c0f6f1b41136a6"
+  dependencies:
+    bindings "~1.2.1"
+    nan "^2.0.0"
 
 agent-base@6:
   version "6.0.2"

@@ -1,3 +1,3 @@
-declare module "@paulcbetts/system-idle-time" {
+declare module "@velaro/system-idle-time" {
   export function getIdleTime(): number;
 }
