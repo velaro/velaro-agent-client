@@ -26,7 +26,7 @@ jobs:
 
 - job: macOS
   pool:
-    vmImage: macOS-10.15
+    vmImage: macOS-latest
   variables:
     - name: CSC_LINK
       value: $(cert.secureFilePath)
