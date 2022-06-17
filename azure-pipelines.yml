@@ -40,7 +40,7 @@ jobs:
       displayName: 'Download CA certificate'
       inputs:
         secureFile: 'velaro_mac.p12'
-    - script: yarn
+    - script: yarn install -std=c++17
       displayName: Install Packages
     - script: yarn dist:mac:dmg
       displayName: Deploy DMG
