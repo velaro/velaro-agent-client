@@ -107,6 +107,7 @@ const show = (notification: Notification) => {
     resizable: false,
     webPreferences: {
       nodeIntegration: true,
+      contextIsolation: false
     },
   });
 
