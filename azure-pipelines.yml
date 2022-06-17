@@ -33,7 +33,7 @@ jobs:
   steps:
     - task: NodeTool@0
       inputs:
-        versionSpec: 16.15.1
+        versionSpec: 14.19.1
       displayName: Install Node.js
     - task: DownloadSecureFile@1
       name: cert
